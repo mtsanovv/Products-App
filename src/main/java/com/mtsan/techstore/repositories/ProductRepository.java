@@ -5,4 +5,5 @@ import com.mtsan.techstore.entities.Products;
 
 public interface ProductRepository extends CrudRepository<Products, Long>
 {
+
 }

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>An error has occurred</title>
+</head>
+<body style="text-align: center;">
+    <h1>There has been an error</h1>
+
+    <h2 style="color: red;" th:text="${status}"></h2>
+    <h3 style="color: red;" th:text="${error}"></h3>
+    <div th:if="${returnTo}">
+        <a th:href="${returnTo}" class="button">Go back</a>
+    </div>
+</body>
+</html>

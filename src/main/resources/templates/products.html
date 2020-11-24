@@ -4,22 +4,23 @@
 <head>
     <meta charset="UTF-8">
     <title>Products Listing</title>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
     <script src="scripts/products.js"></script>
 </head>
 <body style="text-align:center">
     <h1>Products</h1>
-    <a href="/add">Add products</a>
+    <a href="/products/add">Add products</a>
     <table>
         <thead>
             <tr class="headings">
                 <th th:each="header: ${headers}" class="column-title" th:text="${header}" />
-                <th>Actions</th>
+                <th th:if="${rows}">Actions</th>
             </tr>
         </thead>
 
         <tbody>
-            <tr th:each="row: ${rows}" id="tablerow">
-                <td th:each="header: ${headers}" th:text="${row.get(header)}" />
+            <tr th:each="row: ${rows}" >
+                <td th:each="header: ${headers}" th:text="${row.get(header)}"></td>
                 <td><button th:onclick="|editProduct('${row.get('ID')}')|">Edit</button> <button th:onclick="|deleteProduct('${row.get('ID')}')|">Delete</button></td>
             </tr>
         </tbody>

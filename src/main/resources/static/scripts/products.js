@@ -5,5 +5,14 @@ function editProduct(productId)
 
 function deleteProduct(productId)
 {
-    //DELETE request to a page - if there's an error, return 404 page saying the id specified cannot be found
+    $.ajax({
+        type: 'DELETE',
+        url: '/products/' + productId,
+        success: function (result) {
+            $("body").html(result);
+        },
+        error: function (e) {
+            $("body").html(e.responseText);
+        }
+    });
 }

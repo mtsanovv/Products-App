@@ -21,6 +21,9 @@ public class Products implements Serializable
 	@Column(name = "quantity")
 	private Long quantity;
 
+	@Column(name = "criticalQuantity")
+	private Long criticalQuantity;
+
 	@Column(name = "pricePerItem")
 	private BigDecimal pricePerItem;
 
@@ -31,6 +34,7 @@ public class Products implements Serializable
 		//the actual usable constructor
 		this.name = name;
 		this.quantity = quantity;
+		this.criticalQuantity = criticalQuantity;
 		this.pricePerItem = pricePerItem;
 	}
 
@@ -52,6 +56,16 @@ public class Products implements Serializable
 	public Long getQuantity()
 	{
 		return quantity;
+	}
+
+	public Long getCriticalQuantity()
+	{
+		return criticalQuantity;
+	}
+
+	public void setCriticalQuantity(Long criticalQuantity)
+	{
+		this.criticalQuantity = criticalQuantity;
 	}
 
 	public void setQuantity(Long quantity)
