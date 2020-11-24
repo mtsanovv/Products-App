@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Products Listing</title>
+    <script src="scripts/products.js"></script>
+</head>
+<body style="text-align:center">
+    <h1>Products</h1>
+    <a href="/add">Add products</a>
+    <table>
+        <thead>
+            <tr class="headings">
+                <th th:each="header: ${headers}" class="column-title" th:text="${header}" />
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr th:each="row: ${rows}" id="tablerow">
+                <td th:each="header: ${headers}" th:text="${row.get(header)}" />
+                <td><button th:onclick="|editProduct('${row.get('ID')}')|">Edit</button> <button th:onclick="|deleteProduct('${row.get('ID')}')|">Delete</button></td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>
