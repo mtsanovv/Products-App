@@ -68,9 +68,8 @@ public class ProductsController
 		try
 		{
 			productRepository.save(product);
-			model.addAttribute("info", "Product added successfully.");
-			model.addAttribute("returnTo", "/products");
-			return "productSuccess";
+			response.setStatus(HttpServletResponse.SC_CREATED);
+			return products(model, response);
 		}
 		catch(Exception e)
 		{
@@ -97,9 +96,7 @@ public class ProductsController
 				{
 					productRepository.deleteById(parsedId);
 					response.setStatus(HttpServletResponse.SC_OK);
-					model.addAttribute("info", "The product with ID " + productId + " has been deleted successfully.");
-					model.addAttribute("returnTo", "/products");
-					return "productSuccess";
+					return products(model, response);
 				}
 				else
 				{
