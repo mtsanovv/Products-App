@@ -1,6 +1,8 @@
 package com.mtsan.techstore.entities;
 
 
+import org.hibernate.annotations.GenericGenerator;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -11,7 +13,7 @@ public class Products implements Serializable
 	public static final long serialVersionUID = 2L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name = "id")
 	private Long id;
 
@@ -27,7 +29,7 @@ public class Products implements Serializable
 	@Column(name = "pricePerItem")
 	private BigDecimal pricePerItem;
 
-	Products() {} //default constructor
+	public Products() {} //default constructor
 
 	public Products(String name, Long quantity, BigDecimal pricePerItem)
 	{

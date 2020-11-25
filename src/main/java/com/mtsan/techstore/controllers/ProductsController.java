@@ -4,14 +4,12 @@ package com.mtsan.techstore.controllers;
 import com.mtsan.techstore.entities.Products;
 import com.mtsan.techstore.repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 import javax.persistence.NoResultException;
 import javax.servlet.http.HttpServletResponse;
@@ -34,11 +32,11 @@ public class ProductsController
 		if(productRepository.count() > 0)
 		{
 			Iterable<Products> allProducts = productRepository.findAll();
-			ArrayList<String> headers = new ArrayList<>(Arrays.asList("ID", "Name", "Quantity", "Critical quantity", "Price per item"));
+			String[] headers = {"ID", "Name", "Quantity", "Critical quantity", "Price per item (BGN)"};
 			ArrayList<Map<String, Object>> rows = new ArrayList<>();
 			for (Products product : allProducts)
 			{
-				Map<String, Object> productDataMap = Map.of(headers.get(0), product.getId(), headers.get(1), product.getName(), headers.get(2), product.getQuantity(), headers.get(3), product.getCriticalQuantity(), headers.get(4), product.getPricePerItem());
+				Map<String, Object> productDataMap = Map.of(headers[0], product.getId(), headers[1], product.getName(), headers[2], product.getQuantity(), headers[3], product.getCriticalQuantity(), headers[4], product.getPricePerItem());
 				rows.add(productDataMap);
 			}
 			model.addAttribute("headers", headers);
@@ -47,6 +45,42 @@ public class ProductsController
 		return "products";
 	}
 
+	//adding a product - getting the interface
+	@RequestMapping(value = "/products/add", method = RequestMethod.GET)
+	public String getProductAdditionInterface(Model model, HttpServletResponse response)
+	{
+		String[] headers = {"Name", "Quantity", "Critical quantity", "Price per item (BGN)"};
+		Map<String, String[]> row = new HashMap<>();
+		row.put(headers[0], new String[]{"^.{1,}$", "name"});
+		row.put(headers[1], new String[]{"^\\d{1,}$", "quantity"});
+		row.put(headers[2], new String[]{"^\\d{1,}$", "criticalQuantity"});
+		row.put(headers[3], new String[]{"^[0-9]{1,10}\\.[0-9]{1,5}$", "pricePerItem"});
+		model.addAttribute("headers", headers);
+		model.addAttribute("row", row);
+		model.addAttribute("product", new Products());
+		return "addProduct";
+	}
+
+	//adding the actual product
+	@RequestMapping(value = "/products/add", method = RequestMethod.POST)
+	public String addProduct(@ModelAttribute Products product, Model model, HttpServletResponse response)
+	{
+		try
+		{
+			productRepository.save(product);
+			model.addAttribute("info", "Product added successfully.");
+			model.addAttribute("returnTo", "/products");
+			return "productSuccess";
+		}
+		catch(Exception e)
+		{
+			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+			model.addAttribute("status", response.getStatus());
+			model.addAttribute("error", "Cannot add product: an error has occurred when trying to save the data.");
+			model.addAttribute("returnTo", "/products/add");
+			return "error";
+		}
+	}
 
 	//deleting products
 	@RequestMapping(value = "/products/{productId}", method = RequestMethod.DELETE)
@@ -75,14 +109,16 @@ public class ProductsController
 			catch(NumberFormatException | NoResultException e)
 			{
 				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+				model.addAttribute("status", response.getStatus());
 				model.addAttribute("error", "Cannot delete product: invalid ID supplied.");
 				model.addAttribute("returnTo", "/products");
 				return "error";
 			}
 			catch(Exception e)
 			{
-				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-				model.addAttribute("error", "Cannot delete product: an error has occurred.");
+				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+				model.addAttribute("status", response.getStatus());
+				model.addAttribute("error", "Cannot delete product: an error has occurred during the deletion process.");
 				model.addAttribute("returnTo", "/products");
 				return "error";
 			}
@@ -90,6 +126,7 @@ public class ProductsController
 		else
 		{
 			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+			model.addAttribute("status", response.getStatus());
 			model.addAttribute("error", "Cannot delete product: no products available.");
 			model.addAttribute("returnTo", "/products");
 			return "error";
