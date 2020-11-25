@@ -12,7 +12,7 @@
     <table>
         <thead>
             <tr class="headings">
-                <th th:each="header: ${headers}" class="column-title" th:text="${header}" />
+                <th th:each="header: ${headers}" th:text="${header}" />
                 <th th:if="${rows}">Actions</th>
             </tr>
         </thead>
@@ -20,7 +20,7 @@
         <tbody>
             <tr th:each="row: ${rows}" >
                 <td th:each="header: ${headers}" th:text="${row.get(header)}"></td>
-                <td><button th:onclick="|editProduct('${row.get('ID')}')|">Edit</button> <button th:onclick="|deleteProduct('${row.get('ID')}')|">Delete</button></td>
+                <td><a th:href="|/products/${row.get('ID')}|"><button>Edit</button></a> <button th:onclick="|deleteProduct(${row.get('ID')})|">Delete</button></td>
             </tr>
         </tbody>
     </table>
