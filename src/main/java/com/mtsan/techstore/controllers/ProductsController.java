@@ -1,6 +1,7 @@
 package com.mtsan.techstore.controllers;
 
 
+import com.mtsan.techstore.ErrorPage;
 import com.mtsan.techstore.entities.Products;
 import com.mtsan.techstore.repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,11 +72,7 @@ public class ProductsController
 		}
 		catch(Exception e)
 		{
-			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-			model.addAttribute("status", response.getStatus());
-			model.addAttribute("error", "Cannot add product: an error has occurred when trying to save the data.");
-			model.addAttribute("returnTo", "/products/add");
-			return "error";
+			return ErrorPage.generateErrorPage(model, response, HttpServletResponse.SC_NOT_FOUND, "Cannot add product: an error has occurred when trying to save the data.", "/products/add");
 		}
 	}
 
@@ -103,28 +100,16 @@ public class ProductsController
 			}
 			catch(NumberFormatException | NoResultException e)
 			{
-				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-				model.addAttribute("status", response.getStatus());
-				model.addAttribute("error", "Cannot delete product: invalid ID supplied.");
-				model.addAttribute("returnTo", "/products");
-				return "error";
+				return ErrorPage.generateErrorPage(model, response, HttpServletResponse.SC_NOT_FOUND, "Cannot delete product: invalid ID supplied.", "/products");
 			}
 			catch(Exception e)
 			{
-				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-				model.addAttribute("status", response.getStatus());
-				model.addAttribute("error", "Cannot delete product: an error has occurred during the deletion process.");
-				model.addAttribute("returnTo", "/products");
-				return "error";
+				return ErrorPage.generateErrorPage(model, response, HttpServletResponse.SC_NOT_FOUND, "Cannot delete product: an error has occurred during the deletion process.", "/products");
 			}
 		}
 		else
 		{
-			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-			model.addAttribute("status", response.getStatus());
-			model.addAttribute("error", "Cannot delete product: no products available.");
-			model.addAttribute("returnTo", "/products");
-			return "error";
+			return ErrorPage.generateErrorPage(model, response, HttpServletResponse.SC_NOT_FOUND, "Cannot delete product: no products available.", "/products");
 		}
 	}
 
@@ -160,28 +145,16 @@ public class ProductsController
 			}
 			catch(NumberFormatException | NoResultException e)
 			{
-				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-				model.addAttribute("status", response.getStatus());
-				model.addAttribute("error", "Cannot edit product: invalid ID supplied.");
-				model.addAttribute("returnTo", "/products");
-				return "error";
+				return ErrorPage.generateErrorPage(model, response, HttpServletResponse.SC_NOT_FOUND, "Cannot edit product: invalid ID supplied.", "/products");
 			}
 			catch(Exception e)
 			{
-				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-				model.addAttribute("status", response.getStatus());
-				model.addAttribute("error", "Cannot edit product: an error has occurred during the deletion process.");
-				model.addAttribute("returnTo", "/products");
-				return "error";
+				return ErrorPage.generateErrorPage(model, response, HttpServletResponse.SC_NOT_FOUND, "Cannot edit product: an error has occurred when fetching data.", "/products");
 			}
 		}
 		else
 		{
-			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-			model.addAttribute("status", response.getStatus());
-			model.addAttribute("error", "Cannot edit product: no products available.");
-			model.addAttribute("returnTo", "/products");
-			return "error";
+			return ErrorPage.generateErrorPage(model, response, HttpServletResponse.SC_NOT_FOUND, "Cannot edit product: no products available.", "/products");
 		}
 	}
 
@@ -189,7 +162,6 @@ public class ProductsController
 	@RequestMapping(value = "/products/{productId}", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.PUT)
 	public String editProduct(@RequestBody Products newProduct, @PathVariable String productId, Model model, HttpServletResponse response)
 	{
-		//System.out.println(newProduct.getQuantity());
 		if(productRepository.count() > 0)
 		{
 			Long parsedId;
@@ -209,38 +181,18 @@ public class ProductsController
 					throw new NoResultException();
 				}
 			}
-			catch(NumberFormatException e)
+			catch(NumberFormatException | NoResultException e)
 			{
-				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-				model.addAttribute("status", response.getStatus());
-				model.addAttribute("error", "Cannot edit product: invalid changes supplied.");
-				model.addAttribute("returnTo", "/products/" + productId);
-				return "error";
-			}
-			catch(NoResultException e)
-			{
-				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-				model.addAttribute("status", response.getStatus());
-				model.addAttribute("error", "Cannot edit product: invalid ID supplied.");
-				model.addAttribute("returnTo", "/products");
-				return "error";
+				return ErrorPage.generateErrorPage(model, response, HttpServletResponse.SC_NOT_FOUND, "Cannot edit product: invalid ID supplied.", "/products");
 			}
 			catch(Exception e)
 			{
-				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-				model.addAttribute("status", response.getStatus());
-				model.addAttribute("error", "Cannot edit product: an error has occurred during the update process.");
-				model.addAttribute("returnTo", "/products");
-				return "error";
+				return ErrorPage.generateErrorPage(model, response, HttpServletResponse.SC_NOT_FOUND, "Cannot edit product: an error has occurred during the update process.", "/products");
 			}
 		}
 		else
 		{
-			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-			model.addAttribute("status", response.getStatus());
-			model.addAttribute("error", "Cannot edit product: no products available.");
-			model.addAttribute("returnTo", "/products");
-			return "error";
+			return ErrorPage.generateErrorPage(model, response, HttpServletResponse.SC_NOT_FOUND, "Cannot edit product: no products available.", "/products");
 		}
 	}
 }
