@@ -1,25 +1,21 @@
 package com.mtsan.techstore.controllers;
 
+import com.mtsan.techstore.ErrorPage;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
-@ControllerAdvice
-public class ExceptionHandlingController
-{
+@RestControllerAdvice
+public class ExceptionHandlingController {
 
 	@ExceptionHandler(HttpMessageNotReadableException.class)
-	public ModelAndView handleHttpMessageNotReadableException (HttpMessageNotReadableException e)
-	{
-		ModelAndView model = new ModelAndView();
-		model.addObject("status", HttpServletResponse.SC_BAD_REQUEST);
-		model.addObject("error", "Bad Request");
-		model.setViewName("error");
-
-		return model;
+	public ResponseEntity<Map<String, Object>> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+		return ErrorPage.generateErrorPage(HttpStatus.BAD_REQUEST, HttpServletResponse.SC_BAD_REQUEST, "Bad Request");
 	}
 
 }

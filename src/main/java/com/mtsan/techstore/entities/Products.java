@@ -8,12 +8,11 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 
 @Entity
-public class Products implements Serializable
-{
+public class Products implements Serializable {
 	public static final long serialVersionUID = 2L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
 	private Long id;
 
@@ -29,10 +28,10 @@ public class Products implements Serializable
 	@Column(name = "pricePerItem")
 	private BigDecimal pricePerItem;
 
-	public Products() {} //default constructor
+	public Products() {
+	} //default constructor
 
-	public Products(String name, Long quantity, BigDecimal pricePerItem)
-	{
+	public Products(String name, Long quantity, BigDecimal pricePerItem) {
 		//the actual usable constructor
 		this.name = name;
 		this.quantity = quantity;
@@ -40,53 +39,43 @@ public class Products implements Serializable
 		this.pricePerItem = pricePerItem;
 	}
 
-	public String getName()
-	{
+	public String getName() {
 		return name;
 	}
 
-	public BigDecimal getPricePerItem()
-	{
+	public BigDecimal getPricePerItem() {
 		return pricePerItem;
 	}
 
-	public Long getId()
-	{
+	public Long getId() {
 		return id;
 	}
 
-	public Long getQuantity()
-	{
+	public Long getQuantity() {
 		return quantity;
 	}
 
-	public Long getCriticalQuantity()
-	{
+	public Long getCriticalQuantity() {
 		return criticalQuantity;
 	}
 
-	public void setCriticalQuantity(Long criticalQuantity)
-	{
+	public void setCriticalQuantity(Long criticalQuantity) {
 		this.criticalQuantity = criticalQuantity;
 	}
 
-	public void setQuantity(Long quantity)
-	{
+	public void setQuantity(Long quantity) {
 		this.quantity = quantity;
 	}
 
-	public void setName(String name)
-	{
+	public void setName(String name) {
 		this.name = name;
 	}
 
-	public void setId(Long id)
-	{
+	public void setId(Long id) {
 		this.id = id;
 	}
 
-	public void setPricePerItem(BigDecimal pricePerItem)
-	{
+	public void setPricePerItem(BigDecimal pricePerItem) {
 		this.pricePerItem = pricePerItem;
 	}
 }

@@ -1,17 +1,16 @@
 package com.mtsan.techstore;
 
-import org.springframework.ui.Model;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
-import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
+import java.util.Map;
 
-public class ErrorPage
-{
-	public static String generateErrorPage(Model model, HttpServletResponse response, int httpResponse, String errorMessage, String returnTo)
-	{
-		response.setStatus(httpResponse);
-		model.addAttribute("status", response.getStatus());
-		model.addAttribute("error", errorMessage);
-		model.addAttribute("returnTo", returnTo);
-		return "error";
+public class ErrorPage {
+	public static ResponseEntity<Map<String, Object>> generateErrorPage(HttpStatus httpStatus, int httpCode, String errorMessage) {
+		Map<String, Object> result = new HashMap<>();
+		result.put("code", httpCode);
+		result.put("message", errorMessage);
+		return new ResponseEntity<>(result, httpStatus);
 	}
 }
