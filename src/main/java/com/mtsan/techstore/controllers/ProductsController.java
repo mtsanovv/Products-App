@@ -1,6 +1,5 @@
 package com.mtsan.techstore.controllers;
 
-
 import com.mtsan.techstore.ErrorPage;
 import com.mtsan.techstore.entities.Products;
 import com.mtsan.techstore.repositories.ProductRepository;
@@ -29,17 +28,22 @@ public class ProductsController {
 		if (productRepository.count() > 0) {
 			Iterable<Products> allProducts = productRepository.findAll();
 			String[] headers = {"ID", "Name", "Quantity", "Critical quantity", "Price per item (BGN)"};
-			ArrayList<Map<String, Object>> rows = new ArrayList<>();
+			ArrayList<ArrayList<Object>> rows = new ArrayList<>();
 			for (Products product : allProducts) {
-				Map<String, Object> productDataMap = Map.of(headers[0], product.getId(), headers[1], product.getName(), headers[2], product.getQuantity(), headers[3], product.getCriticalQuantity(), headers[4], product.getPricePerItem());
-				rows.add(productDataMap);
+				ArrayList<Object> productData = new ArrayList<>();
+				productData.add(product.getId());
+				productData.add(product.getName());
+				productData.add(product.getQuantity());
+				productData.add(product.getCriticalQuantity());
+				productData.add(product.getPricePerItem());
+				rows.add(productData);
 			}
 
 			Map<String, Object> result = new HashMap<>();
-			result.put("headers", headers);
-			result.put("rows", rows);
 			result.put("code", HttpServletResponse.SC_OK);
 			result.put("message", "Products listing available");
+			result.put("headers", headers);
+			result.put("rows", rows);
 			return ResponseEntity.ok(result);
 		} else {
 			return ErrorPage.generateErrorPage(HttpStatus.NOT_FOUND, HttpServletResponse.SC_NOT_FOUND, "No products found");
@@ -62,10 +66,10 @@ public class ProductsController {
 			}
 
 			Map<String, Object> result = new HashMap<>();
-			result.put("headers", headers);
-			result.put("rows", rows);
 			result.put("code", HttpServletResponse.SC_CREATED);
 			result.put("message", "Product created successfully");
+			result.put("headers", headers);
+			result.put("rows", rows);
 			return new ResponseEntity<>(result, HttpStatus.CREATED);
 		}
 		catch (Exception e) {
