@@ -52,17 +52,22 @@ public class ProductsController {
 
 	//adding a product
 	@RequestMapping(value = "/products", method = RequestMethod.POST)
-	public ResponseEntity<Map<String, Object>> addProduct(@ModelAttribute Products postedProduct) {
+	public ResponseEntity<Map<String, Object>> addProduct(@RequestBody Products postedProduct) {
 		try {
 
 			productRepository.save(postedProduct);
 
 			Iterable<Products> allProducts = productRepository.findAll();
 			String[] headers = {"ID", "Name", "Quantity", "Critical quantity", "Price per item (BGN)"};
-			ArrayList<Map<String, Object>> rows = new ArrayList<>();
+			ArrayList<ArrayList<Object>> rows = new ArrayList<>();
 			for (Products product : allProducts) {
-				Map<String, Object> productDataMap = Map.of(headers[0], product.getId(), headers[1], product.getName(), headers[2], product.getQuantity(), headers[3], product.getCriticalQuantity(), headers[4], product.getPricePerItem());
-				rows.add(productDataMap);
+				ArrayList<Object> productData = new ArrayList<>();
+				productData.add(product.getId());
+				productData.add(product.getName());
+				productData.add(product.getQuantity());
+				productData.add(product.getCriticalQuantity());
+				productData.add(product.getPricePerItem());
+				rows.add(productData);
 			}
 
 			Map<String, Object> result = new HashMap<>();
@@ -74,6 +79,35 @@ public class ProductsController {
 		}
 		catch (Exception e) {
 			return ErrorPage.generateErrorPage(HttpStatus.NOT_FOUND, HttpServletResponse.SC_NOT_FOUND, "Cannot add product: an error has occurred when trying to save the data.");
+		}
+	}
+
+	//fetching a product
+	@RequestMapping(value = "/products/{productId}", method = RequestMethod.GET)
+	public ResponseEntity<Map<String, Object>> getProduct(@PathVariable String productId) {
+		if (productRepository.count() > 0) {
+			Long parsedId;
+			try {
+				parsedId = Long.parseLong(productId);
+				boolean isIdReal = productRepository.existsById(parsedId);
+				if (isIdReal) {
+					Map<String, Object> result = new HashMap<>();
+					result.put("code", HttpServletResponse.SC_OK);
+					result.put("message", "Product found");
+					result.put("product", productRepository.findById(parsedId).get());
+					return new ResponseEntity<>(result, HttpStatus.OK);
+				} else {
+					throw new NoResultException();
+				}
+			}
+			catch (NumberFormatException | NoResultException e) {
+				return ErrorPage.generateErrorPage(HttpStatus.NOT_FOUND, HttpServletResponse.SC_NOT_FOUND, "Cannot fetch product data: invalid ID supplied.");
+			}
+			catch (Exception e) {
+				return ErrorPage.generateErrorPage(HttpStatus.NOT_FOUND, HttpServletResponse.SC_NOT_FOUND, "Cannot fetch product data: an error has occurred during the fetching process.");
+			}
+		} else {
+			return ErrorPage.generateErrorPage(HttpStatus.NOT_FOUND, HttpServletResponse.SC_NOT_FOUND, "Cannot fetch product data: no products available.");
 		}
 	}
 
