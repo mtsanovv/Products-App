@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
-	@Query(value = "SELECT * FROM users WHERE rank = ?1", nativeQuery = true)
+	@Query(value = "SELECT * FROM `users` WHERE `rank` = ?1", nativeQuery = true)
 	List<User> getUserByRank(String rank);
 
 }
