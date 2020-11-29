@@ -26,7 +26,7 @@ public class MerchantsController {
 	//fetching a list of all merchants
 	@RequestMapping(value = "/merchants", method = RequestMethod.GET)
 	public ResponseEntity<Map<String, Object>> products() {
-		List<User> merchants = userRepository.getUserByRank(Rank.Merchant.toString());
+		List<User> merchants = userRepository.getUserByRank(Rank.Merchant);
 		if (merchants.size() > 0) {
 			String[] headers = {"User ID", "Username", "Display Name"};
 			ArrayList<ArrayList<Object>> rows = new ArrayList<>();
