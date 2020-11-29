@@ -1,7 +1,7 @@
 package com.mtsan.techstore.controllers;
 
 import com.mtsan.techstore.ErrorPage;
-import com.mtsan.techstore.entities.Products;
+import com.mtsan.techstore.entities.Product;
 import com.mtsan.techstore.repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,10 +26,10 @@ public class ProductsController {
 	@RequestMapping(value = "/products", method = RequestMethod.GET)
 	public ResponseEntity<Map<String, Object>> products() {
 		if (productRepository.count() > 0) {
-			Iterable<Products> allProducts = productRepository.findAll();
+			Iterable<Product> allProducts = productRepository.findAll();
 			String[] headers = {"ID", "Name", "Quantity", "Critical quantity", "Price per item (BGN)"};
 			ArrayList<ArrayList<Object>> rows = new ArrayList<>();
-			for (Products product : allProducts) {
+			for (Product product : allProducts) {
 				ArrayList<Object> productData = new ArrayList<>();
 				productData.add(product.getId());
 				productData.add(product.getName());
@@ -52,15 +52,15 @@ public class ProductsController {
 
 	//adding a product
 	@RequestMapping(value = "/products", method = RequestMethod.POST)
-	public ResponseEntity<Map<String, Object>> addProduct(@RequestBody Products postedProduct) {
+	public ResponseEntity<Map<String, Object>> addProduct(@RequestBody Product postedProduct) {
 		try {
 
 			productRepository.save(postedProduct);
 
-			Iterable<Products> allProducts = productRepository.findAll();
+			Iterable<Product> allProducts = productRepository.findAll();
 			String[] headers = {"ID", "Name", "Quantity", "Critical quantity", "Price per item (BGN)"};
 			ArrayList<ArrayList<Object>> rows = new ArrayList<>();
-			for (Products product : allProducts) {
+			for (Product product : allProducts) {
 				ArrayList<Object> productData = new ArrayList<>();
 				productData.add(product.getId());
 				productData.add(product.getName());
@@ -139,7 +139,7 @@ public class ProductsController {
 
 	//editing a product
 	@RequestMapping(value = "/products/{productId}", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.PUT)
-	public ResponseEntity<Map<String, Object>> editProduct(@RequestBody Products newProduct, @PathVariable String productId, Model model, HttpServletResponse response) {
+	public ResponseEntity<Map<String, Object>> editProduct(@RequestBody Product newProduct, @PathVariable String productId, Model model, HttpServletResponse response) {
 		if (productRepository.count() > 0) {
 			Long parsedId;
 			try {

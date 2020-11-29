@@ -5,7 +5,8 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 
 @Entity
-public class Products implements Serializable {
+@Table(name = "products")
+public class Product implements Serializable {
 	public static final long serialVersionUID = 2L;
 
 	@Id
@@ -25,10 +26,10 @@ public class Products implements Serializable {
 	@Column(name = "pricePerItem")
 	private BigDecimal pricePerItem;
 
-	public Products() {
+	public Product() {
 	} //default constructor
 
-	public Products(String name, Long quantity, BigDecimal pricePerItem) {
+	public Product(String name, Long quantity, BigDecimal pricePerItem) {
 		//the actual usable constructor
 		this.name = name;
 		this.quantity = quantity;
