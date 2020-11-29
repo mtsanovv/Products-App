@@ -1,6 +1,5 @@
 package com.mtsan.techstore.repositories;
 
-import com.mtsan.techstore.Rank;
 import com.mtsan.techstore.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
