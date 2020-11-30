@@ -63,22 +63,6 @@ public class ProductsController {
 		}
 	}
 
-	//deleting a product
-	@RequestMapping(value = "/products/{productId}", method = RequestMethod.DELETE)
-	public ResponseEntity deleteProduct(@PathVariable Long productId) throws TechstoreDataException {
-		if (productRepository.count() > 0) {
-			boolean isIdReal = productRepository.existsById(productId);
-			if (isIdReal) {
-				productRepository.deleteById(productId);
-				return ResponseEntity.status(HttpStatus.OK).build();
-			} else {
-				throw new TechstoreDataException(HttpServletResponse.SC_NOT_FOUND, "Product not found");
-			}
-		} else {
-			throw new TechstoreDataException(HttpServletResponse.SC_NOT_FOUND, "No products found");
-		}
-	}
-
 	//editing a product
 	@RequestMapping(value = "/products/{productId}", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.PUT)
 	public ResponseEntity editProduct(@RequestBody Product newProduct, @PathVariable Long productId) throws TechstoreDataException {
@@ -88,6 +72,22 @@ public class ProductsController {
 				newProduct.setId(productId);
 				Product savedProduct = productRepository.save(newProduct);
 				return ResponseEntity.status(HttpStatus.OK).body(savedProduct);
+			} else {
+				throw new TechstoreDataException(HttpServletResponse.SC_NOT_FOUND, "Product not found");
+			}
+		} else {
+			throw new TechstoreDataException(HttpServletResponse.SC_NOT_FOUND, "No products found");
+		}
+	}
+
+	//deleting a product
+	@RequestMapping(value = "/products/{productId}", method = RequestMethod.DELETE)
+	public ResponseEntity deleteProduct(@PathVariable Long productId) throws TechstoreDataException {
+		if (productRepository.count() > 0) {
+			boolean isIdReal = productRepository.existsById(productId);
+			if (isIdReal) {
+				productRepository.deleteById(productId);
+				return ResponseEntity.status(HttpStatus.OK).build();
 			} else {
 				throw new TechstoreDataException(HttpServletResponse.SC_NOT_FOUND, "Product not found");
 			}
