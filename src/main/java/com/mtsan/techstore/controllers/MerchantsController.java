@@ -48,15 +48,14 @@ public class MerchantsController {
 	//adding a merchant
 	@RequestMapping(value = "/merchants", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
 	public ResponseEntity addMerchant(@RequestBody User postedMerchant) throws TechstoreDataException {
-		try {
-			postedMerchant.setPassword(passwordEncoder.encode(postedMerchant.getPassword()));
-			postedMerchant.setRank(Rank.Merchant);
+		postedMerchant.setPassword(passwordEncoder.encode(postedMerchant.getPassword()));
+		postedMerchant.setRank(Rank.Merchant);
+		if (userRepository.getUsersByUsername(postedMerchant.getUsername()) == 0) {
 			User savedMerchant = userRepository.save(postedMerchant);
 
 			return ResponseEntity.status(HttpStatus.CREATED).body(savedMerchant);
-		}
-		catch (DataIntegrityViolationException e) {
-			throw new TechstoreDataException(HttpServletResponse.SC_NOT_FOUND, "This username is already in use, please use another one.");
+		} else {
+			throw new TechstoreDataException(HttpServletResponse.SC_NOT_FOUND, "This username is already in use, please use another one");
 		}
 	}
 
