@@ -13,10 +13,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
 @RestController
-public class CustomErrorController implements ErrorController {
+public class UnhandledErrorController implements ErrorController {
 
 	@RequestMapping(value = "/error")
-	public ResponseEntity<Map<String, Object>> showError(HttpServletRequest request) {
+	public ResponseEntity showError(HttpServletRequest request) {
 		Object status = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
 
 		if (status != null) {
@@ -25,10 +25,10 @@ public class CustomErrorController implements ErrorController {
 			HttpStatus httpStatus = HttpStatus.resolve(statusCode);
 
 			if(httpStatus != null) {
-				return ErrorPage.generateErrorPage(httpStatus, statusCode, httpStatus.getReasonPhrase());
+				return ErrorPage.generateErrorPage(statusCode, httpStatus.getReasonPhrase());
 			}
 		}
-		return ErrorPage.generateErrorPage(HttpStatus.BAD_REQUEST, HttpServletResponse.SC_BAD_REQUEST, "Bad Request");
+		return ErrorPage.generateErrorPage(HttpServletResponse.SC_BAD_REQUEST, "Bad Request");
 	}
 
 	public String getErrorPath() {

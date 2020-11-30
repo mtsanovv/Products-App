@@ -1,20 +1,16 @@
 package com.mtsan.techstore.controllers;
 
-import com.mtsan.techstore.ErrorPage;
 import com.mtsan.techstore.entities.Product;
+import com.mtsan.techstore.exceptions.TechstoreDataException;
 import com.mtsan.techstore.repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.NoResultException;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 public class ProductsController {
@@ -24,11 +20,10 @@ public class ProductsController {
 
 	//fetching a list of all products
 	@RequestMapping(value = "/products", method = RequestMethod.GET)
-	public ResponseEntity<Map<String, Object>> products() {
+	public ResponseEntity products() throws TechstoreDataException {
 		if (productRepository.count() > 0) {
 			Iterable<Product> allProducts = productRepository.findAll();
-			String[] headers = {"ID", "Name", "Quantity", "Critical quantity", "Price per item (BGN)"};
-			ArrayList<ArrayList<Object>> rows = new ArrayList<>();
+			ArrayList<ArrayList<Object>> products = new ArrayList<>();
 			for (Product product : allProducts) {
 				ArrayList<Object> productData = new ArrayList<>();
 				productData.add(product.getId());
@@ -36,131 +31,68 @@ public class ProductsController {
 				productData.add(product.getQuantity());
 				productData.add(product.getCriticalQuantity());
 				productData.add(product.getPricePerItem());
-				rows.add(productData);
+				products.add(productData);
 			}
 
-			Map<String, Object> result = new HashMap<>();
-			result.put("code", HttpServletResponse.SC_OK);
-			result.put("message", "Products listing available");
-			result.put("headers", headers);
-			result.put("rows", rows);
-			return ResponseEntity.ok(result);
+			return ResponseEntity.status(HttpStatus.OK).body(products);
 		} else {
-			return ErrorPage.generateErrorPage(HttpStatus.NOT_FOUND, HttpServletResponse.SC_NOT_FOUND, "No products found");
+			throw new TechstoreDataException(HttpServletResponse.SC_NOT_FOUND, "No products found");
 		}
 	}
 
 	//adding a product
 	@RequestMapping(value = "/products", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
-	public ResponseEntity<Map<String, Object>> addProduct(@RequestBody Product postedProduct) {
-		try {
+	public ResponseEntity addProduct(@RequestBody Product postedProduct) {
+		Product savedProduct = productRepository.save(postedProduct);
 
-			productRepository.save(postedProduct);
-
-			Iterable<Product> allProducts = productRepository.findAll();
-			String[] headers = {"ID", "Name", "Quantity", "Critical quantity", "Price per item (BGN)"};
-			ArrayList<ArrayList<Object>> rows = new ArrayList<>();
-			for (Product product : allProducts) {
-				ArrayList<Object> productData = new ArrayList<>();
-				productData.add(product.getId());
-				productData.add(product.getName());
-				productData.add(product.getQuantity());
-				productData.add(product.getCriticalQuantity());
-				productData.add(product.getPricePerItem());
-				rows.add(productData);
-			}
-
-			Map<String, Object> result = new HashMap<>();
-			result.put("code", HttpServletResponse.SC_CREATED);
-			result.put("message", "Product created successfully");
-			result.put("headers", headers);
-			result.put("rows", rows);
-			return new ResponseEntity<>(result, HttpStatus.CREATED);
-		}
-		catch (Exception e) {
-			return ErrorPage.generateErrorPage(HttpStatus.NOT_FOUND, HttpServletResponse.SC_NOT_FOUND, "Cannot add product: an error has occurred when trying to save the data.");
-		}
+		return ResponseEntity.status(HttpStatus.CREATED).body(savedProduct);
 	}
 
 	//fetching a product
 	@RequestMapping(value = "/products/{productId}", method = RequestMethod.GET)
-	public ResponseEntity<Map<String, Object>> getProduct(@PathVariable String productId) {
+	public ResponseEntity getProduct(@PathVariable Long productId) throws TechstoreDataException {
 		if (productRepository.count() > 0) {
-			Long parsedId;
-			try {
-				parsedId = Long.parseLong(productId);
-				boolean isIdReal = productRepository.existsById(parsedId);
-				if (isIdReal) {
-					Map<String, Object> result = new HashMap<>();
-					result.put("code", HttpServletResponse.SC_OK);
-					result.put("message", "Product found");
-					result.put("product", productRepository.findById(parsedId).get());
-					return new ResponseEntity<>(result, HttpStatus.OK);
-				} else {
-					throw new NoResultException();
-				}
-			}
-			catch (NumberFormatException | NoResultException e) {
-				return ErrorPage.generateErrorPage(HttpStatus.NOT_FOUND, HttpServletResponse.SC_NOT_FOUND, "Cannot fetch product data: invalid ID supplied.");
-			}
-			catch (Exception e) {
-				return ErrorPage.generateErrorPage(HttpStatus.NOT_FOUND, HttpServletResponse.SC_NOT_FOUND, "Cannot fetch product data: an error has occurred during the fetching process.");
+			boolean isIdReal = productRepository.existsById(productId);
+			if (isIdReal) {
+				return ResponseEntity.status(HttpStatus.OK).body(productRepository.findById(productId).get());
+			} else {
+				throw new TechstoreDataException(HttpServletResponse.SC_NOT_FOUND, "Product not found");
 			}
 		} else {
-			return ErrorPage.generateErrorPage(HttpStatus.NOT_FOUND, HttpServletResponse.SC_NOT_FOUND, "Cannot fetch product data: no products available.");
+			throw new TechstoreDataException(HttpServletResponse.SC_NOT_FOUND, "No products found");
 		}
 	}
 
 	//deleting a product
 	@RequestMapping(value = "/products/{productId}", method = RequestMethod.DELETE)
-	public ResponseEntity<Map<String, Object>> deleteProduct(@PathVariable String productId) {
+	public ResponseEntity deleteProduct(@PathVariable Long productId) throws TechstoreDataException {
 		if (productRepository.count() > 0) {
-			Long parsedId;
-			try {
-				parsedId = Long.parseLong(productId);
-				boolean isIdReal = productRepository.existsById(parsedId);
-				if (isIdReal) {
-					productRepository.deleteById(parsedId);
-					return products();
-				} else {
-					throw new NoResultException();
-				}
-			}
-			catch (NumberFormatException | NoResultException e) {
-				return ErrorPage.generateErrorPage(HttpStatus.NOT_FOUND, HttpServletResponse.SC_NOT_FOUND, "Cannot delete product: invalid ID supplied.");
-			}
-			catch (Exception e) {
-				return ErrorPage.generateErrorPage(HttpStatus.NOT_FOUND, HttpServletResponse.SC_NOT_FOUND, "Cannot delete product: an error has occurred during the deletion process.");
+			boolean isIdReal = productRepository.existsById(productId);
+			if (isIdReal) {
+				productRepository.deleteById(productId);
+				return ResponseEntity.status(HttpStatus.OK).build();
+			} else {
+				throw new TechstoreDataException(HttpServletResponse.SC_NOT_FOUND, "Product not found");
 			}
 		} else {
-			return ErrorPage.generateErrorPage(HttpStatus.NOT_FOUND, HttpServletResponse.SC_NOT_FOUND, "Cannot delete product: no products available.");
+			throw new TechstoreDataException(HttpServletResponse.SC_NOT_FOUND, "No products found");
 		}
 	}
 
 	//editing a product
 	@RequestMapping(value = "/products/{productId}", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.PUT)
-	public ResponseEntity<Map<String, Object>> editProduct(@RequestBody Product newProduct, @PathVariable String productId, Model model, HttpServletResponse response) {
+	public ResponseEntity editProduct(@RequestBody Product newProduct, @PathVariable Long productId) throws TechstoreDataException {
 		if (productRepository.count() > 0) {
-			Long parsedId;
-			try {
-				parsedId = Long.parseLong(productId);
-				boolean isIdReal = productRepository.existsById(parsedId);
-				if (isIdReal) {
-					newProduct.setId(parsedId);
-					productRepository.save(newProduct);
-					return products();
-				} else {
-					throw new NoResultException();
-				}
-			}
-			catch (NumberFormatException | NoResultException e) {
-				return ErrorPage.generateErrorPage(HttpStatus.NOT_FOUND, HttpServletResponse.SC_NOT_FOUND, "Cannot edit product: invalid ID supplied.");
-			}
-			catch (Exception e) {
-				return ErrorPage.generateErrorPage(HttpStatus.NOT_FOUND, HttpServletResponse.SC_NOT_FOUND, "Cannot edit product: an error has occurred during the update process.");
+			boolean isIdReal = productRepository.existsById(productId);
+			if (isIdReal) {
+				newProduct.setId(productId);
+				Product savedProduct = productRepository.save(newProduct);
+				return ResponseEntity.status(HttpStatus.OK).body(savedProduct);
+			} else {
+				throw new TechstoreDataException(HttpServletResponse.SC_NOT_FOUND, "Product not found");
 			}
 		} else {
-			return ErrorPage.generateErrorPage(HttpStatus.NOT_FOUND, HttpServletResponse.SC_NOT_FOUND, "Cannot edit product: no products available.");
+			throw new TechstoreDataException(HttpServletResponse.SC_NOT_FOUND, "No products found");
 		}
 	}
 }
