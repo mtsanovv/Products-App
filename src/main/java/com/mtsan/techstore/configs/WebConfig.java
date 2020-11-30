@@ -1,4 +1,4 @@
-package com.mtsan.techstore;
+package com.mtsan.techstore.configs;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
