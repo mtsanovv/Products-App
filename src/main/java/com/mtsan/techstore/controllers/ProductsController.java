@@ -51,7 +51,7 @@ public class ProductsController {
 	}
 
 	//adding a product
-	@RequestMapping(value = "/products", method = RequestMethod.POST)
+	@RequestMapping(value = "/products", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
 	public ResponseEntity<Map<String, Object>> addProduct(@RequestBody Product postedProduct) {
 		try {
 
