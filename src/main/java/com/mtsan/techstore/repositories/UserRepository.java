@@ -10,6 +10,6 @@ import java.util.List;
 public interface UserRepository extends JpaRepository<User, Long> {
 
 	@Query("FROM User u WHERE u.rank = ?1")
-	List<User> getUserByRank(Rank rank);
+	List<User> getUsersByRank(Rank rank);
 
 }
