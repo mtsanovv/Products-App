@@ -1,6 +1,7 @@
 package com.mtsan.techstore.controllers;
 
 import com.mtsan.techstore.Rank;
+import com.mtsan.techstore.entities.Product;
 import com.mtsan.techstore.entities.User;
 import com.mtsan.techstore.exceptions.TechstoreDataException;
 import com.mtsan.techstore.repositories.UserRepository;
@@ -68,6 +69,60 @@ public class MerchantsController {
 				User merchant = userRepository.findById(merchantId).get();
 				merchant.setPassword("");
 				return ResponseEntity.status(HttpStatus.OK).body(merchant);
+			} else {
+				throw new TechstoreDataException(HttpServletResponse.SC_NOT_FOUND, "Merchant not found");
+			}
+		} else {
+			throw new TechstoreDataException(HttpServletResponse.SC_NOT_FOUND, "No merchants found");
+		}
+	}
+
+	//editing a merchant
+	@RequestMapping(value = "/merchants/{merchantId}", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.PUT)
+	public ResponseEntity editMerchant(@RequestBody User newMerchant, @PathVariable Long merchantId) throws TechstoreDataException {
+		List<User> merchants = userRepository.getUsersByRank(Rank.Merchant);
+		if (merchants.size() > 0) {
+			boolean isIdReal = userRepository.existsById(merchantId);
+			if (isIdReal) {
+				newMerchant.setId(merchantId);
+				newMerchant.setRank(Rank.Merchant);
+				User oldMerchant = userRepository.findById(merchantId).get();
+				if(newMerchant.getPassword() == null || newMerchant.getPassword().isEmpty())
+				{
+					newMerchant.setPassword(oldMerchant.getPassword());
+				}
+				else
+				{
+					newMerchant.setPassword(passwordEncoder.encode(newMerchant.getPassword()));
+				}
+
+				Long usersWhoHaveThisUsername = userRepository.getUsersByUsername(newMerchant.getUsername());
+				if ((!oldMerchant.getUsername().equals(newMerchant.getUsername()) && usersWhoHaveThisUsername == 0) || (oldMerchant.getUsername().equals(newMerchant.getUsername()) && usersWhoHaveThisUsername == 1)) {
+					User savedMerchant = userRepository.save(newMerchant);
+					return ResponseEntity.status(HttpStatus.OK).body(savedMerchant);
+				} else {
+					throw new TechstoreDataException(HttpServletResponse.SC_NOT_FOUND, "This username is already in use, please use another one");
+				}
+			} else {
+				throw new TechstoreDataException(HttpServletResponse.SC_NOT_FOUND, "Merchant not found");
+			}
+		} else {
+			throw new TechstoreDataException(HttpServletResponse.SC_NOT_FOUND, "No merchants found");
+		}
+	}
+
+	//deleting a merchant
+	@RequestMapping(value = "/merchants/{merchantId}", method = RequestMethod.DELETE)
+	public ResponseEntity deleteMerchant(@PathVariable Long merchantId) throws TechstoreDataException {
+		if (userRepository.count() > 0) {
+			boolean isIdReal = userRepository.existsById(merchantId);
+			if (isIdReal) {
+				if(userRepository.findById(merchantId).get().getRank() == Rank.Merchant) {
+					userRepository.deleteById(merchantId);
+					return ResponseEntity.status(HttpStatus.OK).build();
+				} else {
+					throw new TechstoreDataException(HttpServletResponse.SC_NOT_FOUND, "Invalid merchant ID");
+				}
 			} else {
 				throw new TechstoreDataException(HttpServletResponse.SC_NOT_FOUND, "Merchant not found");
 			}
