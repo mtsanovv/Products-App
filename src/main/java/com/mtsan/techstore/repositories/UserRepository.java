@@ -14,4 +14,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
 	@Query("SELECT COUNT(u) FROM User u WHERE u.username = ?1")
 	Long getUsersByUsername(String username);
+
+	@Query("FROM User u WHERE u.username = ?1")
+	List<User> getUserByUsername(String username);
 }
