@@ -52,12 +52,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					.authorizeRequests()
 						.antMatchers("/merchants*").hasAuthority(Rank.Administrator.toString())
 						.antMatchers("/products*").hasAuthority(Rank.Administrator.toString())
+						.antMatchers("/clients*").hasAuthority(Rank.Merchant.toString())
 						.anyRequest().authenticated()
-				.and()
-					.logout()
-					.logoutUrl("/logout")
-					.deleteCookies("JSESSIONID")
-					.invalidateHttpSession(true)
 				.and()
 					.httpBasic()
 					.authenticationEntryPoint(basicAuthEntryPoint);
