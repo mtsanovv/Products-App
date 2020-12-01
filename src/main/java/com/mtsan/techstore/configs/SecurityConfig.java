@@ -46,15 +46,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity httpSecurity) throws Exception {
 		httpSecurity
-				.cors()
+					.cors()
 				.and()
-				.authorizeRequests()
-				.antMatchers("/merchants*").hasAuthority(Rank.Administrator.toString())
-				.antMatchers("/products*").hasAuthority(Rank.Administrator.toString())
-				.anyRequest().authenticated()
+				.csrf().disable()
+					.authorizeRequests()
+						.antMatchers("/merchants*").hasAuthority(Rank.Administrator.toString())
+						.antMatchers("/products*").hasAuthority(Rank.Administrator.toString())
+						.anyRequest().authenticated()
 				.and()
-				.httpBasic()
-				.authenticationEntryPoint(basicAuthEntryPoint);
+					.logout()
+					.logoutUrl("/logout")
+					.deleteCookies("JSESSIONID")
+					.invalidateHttpSession(true)
+				.and()
+					.httpBasic()
+					.authenticationEntryPoint(basicAuthEntryPoint);
 	}
 
 	@Bean
@@ -63,7 +69,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		configuration.setAllowedOrigins(Arrays.asList(env.getProperty("http.allowed-origins").split(",")));
 		configuration.setAllowedMethods(Arrays.asList("GET","POST", "PUT", "DELETE"));
 		configuration.setAllowCredentials(true);
-		configuration.addAllowedHeader("Authorization");
+		configuration.addAllowedHeader("*");
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", configuration);
 		return source;

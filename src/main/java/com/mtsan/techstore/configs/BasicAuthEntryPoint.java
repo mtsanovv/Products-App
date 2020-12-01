@@ -20,7 +20,7 @@ public class BasicAuthEntryPoint extends BasicAuthenticationEntryPoint {
 
 	@Override
 	public void afterPropertiesSet() {
-		setRealmName("TechStore REST API");
+		setRealmName("TechStore");
 		super.afterPropertiesSet();
 	}
 }
