@@ -1,12 +1,10 @@
 package com.mtsan.techstore.controllers;
 
 import com.mtsan.techstore.Rank;
-import com.mtsan.techstore.entities.Product;
 import com.mtsan.techstore.entities.User;
 import com.mtsan.techstore.exceptions.TechstoreDataException;
 import com.mtsan.techstore.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +13,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -31,16 +28,11 @@ public class MerchantsController {
 	public ResponseEntity merchants() throws TechstoreDataException {
 		List<User> merchants = userRepository.getUsersByRank(Rank.Merchant);
 		if (merchants.size() > 0) {
-			ArrayList<ArrayList<Object>> merchantsData = new ArrayList<>();
 			for (User merchant : merchants) {
-				ArrayList<Object> productData = new ArrayList<>();
-				productData.add(merchant.getId());
-				productData.add(merchant.getUsername());
-				productData.add(merchant.getDisplayName());
-				merchantsData.add(productData);
+				merchant.setPassword(null);
 			}
 
-			return ResponseEntity.status(HttpStatus.OK).body(merchantsData);
+			return ResponseEntity.status(HttpStatus.OK).body(merchants);
 		} else {
 			throw new TechstoreDataException(HttpServletResponse.SC_NOT_FOUND, "No merchants found");
 		}
@@ -53,7 +45,7 @@ public class MerchantsController {
 		postedMerchant.setRank(Rank.Merchant);
 		if (userRepository.getUsersByUsername(postedMerchant.getUsername()) == 0) {
 			User savedMerchant = userRepository.save(postedMerchant);
-
+			savedMerchant.setPassword(null);
 			return ResponseEntity.status(HttpStatus.CREATED).body(savedMerchant);
 		} else {
 			throw new TechstoreDataException(HttpServletResponse.SC_NOT_FOUND, "This username is already in use, please use another one");
@@ -67,7 +59,7 @@ public class MerchantsController {
 			boolean isIdReal = userRepository.existsById(merchantId);
 			if (isIdReal) {
 				User merchant = userRepository.findById(merchantId).get();
-				merchant.setPassword("");
+				merchant.setPassword(null);
 				return ResponseEntity.status(HttpStatus.OK).body(merchant);
 			} else {
 				throw new TechstoreDataException(HttpServletResponse.SC_NOT_FOUND, "Merchant not found");
@@ -99,6 +91,7 @@ public class MerchantsController {
 				Long usersWhoHaveThisUsername = userRepository.getUsersByUsername(newMerchant.getUsername());
 				if ((!oldMerchant.getUsername().equals(newMerchant.getUsername()) && usersWhoHaveThisUsername == 0) || (oldMerchant.getUsername().equals(newMerchant.getUsername()) && usersWhoHaveThisUsername == 1)) {
 					User savedMerchant = userRepository.save(newMerchant);
+					savedMerchant.setPassword(null);
 					return ResponseEntity.status(HttpStatus.OK).body(savedMerchant);
 				} else {
 					throw new TechstoreDataException(HttpServletResponse.SC_NOT_FOUND, "This username is already in use, please use another one");

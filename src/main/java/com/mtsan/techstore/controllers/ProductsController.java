@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
 
 @RestController
 public class ProductsController {
@@ -22,19 +21,7 @@ public class ProductsController {
 	@RequestMapping(value = "/products", method = RequestMethod.GET)
 	public ResponseEntity products() throws TechstoreDataException {
 		if (productRepository.count() > 0) {
-			Iterable<Product> allProducts = productRepository.findAll();
-			ArrayList<ArrayList<Object>> products = new ArrayList<>();
-			for (Product product : allProducts) {
-				ArrayList<Object> productData = new ArrayList<>();
-				productData.add(product.getId());
-				productData.add(product.getName());
-				productData.add(product.getQuantity());
-				productData.add(product.getCriticalQuantity());
-				productData.add(product.getPricePerItem());
-				products.add(productData);
-			}
-
-			return ResponseEntity.status(HttpStatus.OK).body(products);
+			return ResponseEntity.status(HttpStatus.OK).body(productRepository.findAll());
 		} else {
 			throw new TechstoreDataException(HttpServletResponse.SC_NOT_FOUND, "No products found");
 		}
