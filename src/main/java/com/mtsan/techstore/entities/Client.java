@@ -16,16 +16,17 @@ public class Client implements Serializable {
 	@Column(name = "name")
 	private String name;
 
-	@Column(name = "merchantId")
-	private Long merchantId;
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "merchantId")
+	private User merchant;
 
 	public Client() {
 	} //default constructor
 
-	public Client(Long id, String name, Long merchantId) {
+	public Client(Long id, String name, User merchant) {
 		this.id = id;
 		this.name = name;
-		this.merchantId = merchantId;
+		this.merchant = merchant;
 	}
 
 	public Long getId() {
@@ -44,11 +45,7 @@ public class Client implements Serializable {
 		this.name = name;
 	}
 
-	public Long getMerchantId() {
-		return merchantId;
-	}
-
-	public void setMerchantId(Long merchantId) {
-		this.merchantId = merchantId;
+	public void setMerchant(User merchant) {
+		this.merchant = merchant;
 	}
 }

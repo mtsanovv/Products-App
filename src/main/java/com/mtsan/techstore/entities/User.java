@@ -4,6 +4,7 @@ import com.mtsan.techstore.Rank;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -27,6 +28,9 @@ public class User implements Serializable {
 	@Column(name = "rank", columnDefinition = "ENUM('Merchant', 'Administrator')")
 	@Enumerated(EnumType.STRING)
 	private Rank rank;
+
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "merchant")
+	private List<Client> clients;
 
 	public User() {
 	} //default constructor
@@ -76,5 +80,13 @@ public class User implements Serializable {
 
 	public void setRank(Rank rank) {
 		this.rank = rank;
+	}
+
+	public List<Client> getClients() {
+		return clients;
+	}
+
+	public void setClients(List<Client> clients) {
+		this.clients = clients;
 	}
 }

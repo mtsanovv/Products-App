@@ -28,9 +28,8 @@ public class ClientsController {
 	@RequestMapping(value = "/clients", method = RequestMethod.GET)
 	public ResponseEntity clients(Authentication authentication) throws TechstoreDataException {
 		User merchant = userRepository.getUserByUsername(authentication.getName()).get(0);
-		List<Client> clients = clientRepository.getClientsByMerchantId(merchant.getId());
-		if (clients.size() > 0) {
-			return ResponseEntity.status(HttpStatus.OK).body(clients);
+		if (merchant.getClients().size() > 0) {
+			return ResponseEntity.status(HttpStatus.OK).body(merchant.getClients());
 		} else {
 			throw new TechstoreDataException(HttpServletResponse.SC_NOT_FOUND, "No clients found");
 		}
@@ -40,7 +39,7 @@ public class ClientsController {
 	@RequestMapping(value = "/clients", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
 	public ResponseEntity addClient(@RequestBody Client postedClient, Authentication authentication) {
 		User merchant = userRepository.getUserByUsername(authentication.getName()).get(0);
-		postedClient.setMerchantId(merchant.getId());
+		postedClient.setMerchant(merchant);
 
 		Client savedClient = clientRepository.save(postedClient);
 
@@ -50,20 +49,18 @@ public class ClientsController {
 	//fetching a client
 	@RequestMapping(value = "/clients/{clientId}", method = RequestMethod.GET)
 	public ResponseEntity getClient(@PathVariable Long clientId, Authentication authentication) throws TechstoreDataException {
-		if (clientRepository.count() > 0) {
+		User merchant = userRepository.getUserByUsername(authentication.getName()).get(0);
+		List<Client> clients = merchant.getClients();
+		if (clients.size() > 0) {
 			boolean isIdReal = clientRepository.existsById(clientId);
 			if (isIdReal) {
-				User merchant = userRepository.getUserByUsername(authentication.getName()).get(0);
-				List<Client> clients = clientRepository.getClientsByMerchantId(merchant.getId());
-				Client client = clientRepository.findById(clientId).get();
-				if(clients.contains(client)) {
-					return ResponseEntity.status(HttpStatus.OK).body(clientRepository.findById(clientId).get());
-				} else {
-					throw new TechstoreDataException(HttpServletResponse.SC_NOT_FOUND, "Client not found");
+				for (Client client : clients) {
+					if (client.getId().equals(clientId)) {
+						return ResponseEntity.status(HttpStatus.OK).body(client);
+					}
 				}
-			} else {
-				throw new TechstoreDataException(HttpServletResponse.SC_NOT_FOUND, "Client not found");
 			}
+			throw new TechstoreDataException(HttpServletResponse.SC_NOT_FOUND, "Client not found");
 		} else {
 			throw new TechstoreDataException(HttpServletResponse.SC_NOT_FOUND, "No clients found");
 		}
@@ -72,22 +69,21 @@ public class ClientsController {
 	//editing a client
 	@RequestMapping(value = "/clients/{clientId}", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.PUT)
 	public ResponseEntity editClient(@RequestBody Client newClient, @PathVariable Long clientId, Authentication authentication) throws TechstoreDataException {
-		if (clientRepository.count() > 0) {
+		User merchant = userRepository.getUserByUsername(authentication.getName()).get(0);
+		List<Client> clients = merchant.getClients();
+		if (clients.size() > 0) {
 			boolean isIdReal = clientRepository.existsById(clientId);
 			if (isIdReal) {
-				User merchant = userRepository.getUserByUsername(authentication.getName()).get(0);
-				List<Client> clients = clientRepository.getClientsByMerchantId(merchant.getId());
-				Client client = clientRepository.findById(clientId).get();
-				if(clients.contains(client)) {
-					newClient.setId(clientId);
-					Client savedClient = clientRepository.save(newClient);
-					return ResponseEntity.status(HttpStatus.OK).body(savedClient);
-				} else {
-					throw new TechstoreDataException(HttpServletResponse.SC_NOT_FOUND, "Client not found");
+				for (Client client : clients) {
+					if (client.getId().equals(clientId)) {
+						newClient.setId(clientId);
+						newClient.setMerchant(merchant);
+						Client savedClient = clientRepository.save(newClient);
+						return ResponseEntity.status(HttpStatus.OK).body(savedClient);
+					}
 				}
-			} else {
-				throw new TechstoreDataException(HttpServletResponse.SC_NOT_FOUND, "Client not found");
 			}
+			throw new TechstoreDataException(HttpServletResponse.SC_NOT_FOUND, "Client not found");
 		} else {
 			throw new TechstoreDataException(HttpServletResponse.SC_NOT_FOUND, "No clients found");
 		}
@@ -96,21 +92,19 @@ public class ClientsController {
 	//deleting a client
 	@RequestMapping(value = "/clients/{clientId}", method = RequestMethod.DELETE)
 	public ResponseEntity deleteClient(@PathVariable Long clientId, Authentication authentication) throws TechstoreDataException {
-		if (clientRepository.count() > 0) {
+		User merchant = userRepository.getUserByUsername(authentication.getName()).get(0);
+		List<Client> clients = merchant.getClients();
+		if (clients.size() > 0) {
 			boolean isIdReal = clientRepository.existsById(clientId);
 			if (isIdReal) {
-				User merchant = userRepository.getUserByUsername(authentication.getName()).get(0);
-				List<Client> clients = clientRepository.getClientsByMerchantId(merchant.getId());
-				Client client = clientRepository.findById(clientId).get();
-				if(clients.contains(client)) {
-					clientRepository.deleteById(clientId);
-					return ResponseEntity.status(HttpStatus.OK).build();
-				} else {
-					throw new TechstoreDataException(HttpServletResponse.SC_NOT_FOUND, "Client not found");
+				for (Client client : clients) {
+					if (client.getId().equals(clientId)) {
+						clientRepository.deleteById(clientId);
+						return ResponseEntity.status(HttpStatus.OK).build();
+					}
 				}
-			} else {
-				throw new TechstoreDataException(HttpServletResponse.SC_NOT_FOUND, "Client not found");
 			}
+			throw new TechstoreDataException(HttpServletResponse.SC_NOT_FOUND, "Client not found");
 		} else {
 			throw new TechstoreDataException(HttpServletResponse.SC_NOT_FOUND, "No clients found");
 		}
