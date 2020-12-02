@@ -1,7 +1,6 @@
 package com.mtsan.techstore;
 
 import com.mtsan.techstore.exceptions.ExceptionModel;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 public class ErrorPage {

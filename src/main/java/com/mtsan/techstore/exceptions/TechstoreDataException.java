@@ -1,7 +1,6 @@
 package com.mtsan.techstore.exceptions;
 
 import org.springframework.http.HttpStatus;
-
 import java.io.Serializable;
 
 public class TechstoreDataException extends Exception implements Serializable {
