@@ -15,6 +15,7 @@ public class Client implements Serializable {
 
 	@Column(name = "name")
 	private String name;
+	public static final String namePattern = "^.{1,1024}$";
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "merchantId")

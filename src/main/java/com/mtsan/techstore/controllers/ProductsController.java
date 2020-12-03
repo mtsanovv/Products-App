@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @RestController
 public class ProductsController {
@@ -29,7 +31,12 @@ public class ProductsController {
 
 	//adding a product
 	@RequestMapping(value = "/products", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
-	public ResponseEntity addProduct(@RequestBody Product postedProduct) {
+	public ResponseEntity addProduct(@RequestBody Product postedProduct) throws TechstoreDataException {
+		Matcher productNameMatcher = Pattern.compile(Product.namePattern).matcher(postedProduct.getName());
+		if(!productNameMatcher.matches()) {
+			throw new TechstoreDataException(HttpServletResponse.SC_BAD_REQUEST, "Product name must be between 1 and 1024 characters.");
+		}
+
 		Product savedProduct = productRepository.save(postedProduct);
 
 		return ResponseEntity.status(HttpStatus.CREATED).body(savedProduct);
@@ -56,6 +63,11 @@ public class ProductsController {
 		if (productRepository.count() > 0) {
 			boolean isIdReal = productRepository.existsById(productId);
 			if (isIdReal) {
+				Matcher productNameMatcher = Pattern.compile(Product.namePattern).matcher(newProduct.getName());
+				if(!productNameMatcher.matches()) {
+					throw new TechstoreDataException(HttpServletResponse.SC_BAD_REQUEST, "Product name must be between 1 and 1024 characters.");
+				}
+
 				newProduct.setId(productId);
 				Product savedProduct = productRepository.save(newProduct);
 				return ResponseEntity.status(HttpStatus.OK).body(savedProduct);

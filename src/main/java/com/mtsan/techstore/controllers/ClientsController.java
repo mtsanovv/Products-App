@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @RestController
 public class ClientsController {
@@ -36,10 +38,15 @@ public class ClientsController {
 
 	//adding a client
 	@RequestMapping(value = "/clients", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
-	public ResponseEntity addClient(@RequestBody Client postedClient, Authentication authentication) {
+	public ResponseEntity addClient(@RequestBody Client postedClient, Authentication authentication) throws TechstoreDataException {
 		User merchant = userRepository.getUserByUsername(authentication.getName()).get(0);
-		postedClient.setMerchant(merchant);
+		Matcher clientNameMatcher = Pattern.compile(Client.namePattern).matcher(postedClient.getName());
 
+		if(!clientNameMatcher.matches()) {
+			throw new TechstoreDataException(HttpServletResponse.SC_BAD_REQUEST, "Client name must be between 1 and 1024 characters.");
+		}
+
+		postedClient.setMerchant(merchant);
 		Client savedClient = clientRepository.save(postedClient);
 
 		return ResponseEntity.status(HttpStatus.CREATED).body(savedClient);
@@ -75,6 +82,11 @@ public class ClientsController {
 			if (isIdReal) {
 				for (Client client : clients) {
 					if (client.getId().equals(clientId)) {
+						Matcher clientNameMatcher = Pattern.compile(Client.namePattern).matcher(newClient.getName());
+						if(!clientNameMatcher.matches()) {
+							throw new TechstoreDataException(HttpServletResponse.SC_BAD_REQUEST, "Client name must be between 1 and 1024 characters.");
+						}
+
 						newClient.setId(clientId);
 						newClient.setMerchant(merchant);
 						Client savedClient = clientRepository.save(newClient);

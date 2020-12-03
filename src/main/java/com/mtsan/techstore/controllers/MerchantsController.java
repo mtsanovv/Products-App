@@ -1,6 +1,7 @@
 package com.mtsan.techstore.controllers;
 
 import com.mtsan.techstore.Rank;
+import com.mtsan.techstore.entities.Client;
 import com.mtsan.techstore.entities.User;
 import com.mtsan.techstore.exceptions.TechstoreDataException;
 import com.mtsan.techstore.repositories.UserRepository;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @RestController
 public class MerchantsController {
@@ -41,6 +44,26 @@ public class MerchantsController {
 	//adding a merchant
 	@RequestMapping(value = "/merchants", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
 	public ResponseEntity addMerchant(@RequestBody User postedMerchant) throws TechstoreDataException {
+		StringBuilder finalError = new StringBuilder();
+		Matcher merchantPasswordMatcher = Pattern.compile(User.passwordPattern).matcher(postedMerchant.getPassword());
+		Matcher merchantUsernameMatcher = Pattern.compile(User.usernamePattern).matcher(postedMerchant.getUsername());
+		Matcher merchantDisplayNameMatcher = Pattern.compile(User.displayNamePattern).matcher(postedMerchant.getDisplayName());
+
+		if(!merchantPasswordMatcher.matches()) {
+			finalError.append("The password has to be between 8 and 50 characters.<br>");
+		}
+		if(!merchantUsernameMatcher.matches()) {
+			finalError.append("The username has to be between 1 and 128 characters.<br>");
+		}
+
+		if(!merchantDisplayNameMatcher.matches()) {
+			finalError.append("The display name has to be between 1 and 1024 characters.<br>");
+		}
+
+		if(finalError.length() > 0) {
+			throw new TechstoreDataException(HttpServletResponse.SC_BAD_REQUEST, finalError.toString());
+		}
+
 		postedMerchant.setPassword(passwordEncoder.encode(postedMerchant.getPassword()));
 		postedMerchant.setRank(Rank.Merchant);
 		if (userRepository.getUsersByUsername(postedMerchant.getUsername()) == 0) {
@@ -76,6 +99,8 @@ public class MerchantsController {
 		if (merchants.size() > 0) {
 			boolean isIdReal = userRepository.existsById(merchantId);
 			if (isIdReal) {
+				StringBuilder finalError = new StringBuilder();
+
 				newMerchant.setId(merchantId);
 				newMerchant.setRank(Rank.Merchant);
 				User oldMerchant = userRepository.findById(merchantId).get();
@@ -85,11 +110,30 @@ public class MerchantsController {
 				}
 				else
 				{
+					Matcher merchantPasswordMatcher = Pattern.compile(User.passwordPattern).matcher(newMerchant.getPassword());
+					if(!merchantPasswordMatcher.matches()) {
+						finalError.append("If the password is to be changed, it should be between 8 and 50 characters, otherwise leave it empty.<br>");
+					}
 					newMerchant.setPassword(passwordEncoder.encode(newMerchant.getPassword()));
 				}
 
 				Long usersWhoHaveThisUsername = userRepository.getUsersByUsername(newMerchant.getUsername());
 				if ((!oldMerchant.getUsername().equals(newMerchant.getUsername()) && usersWhoHaveThisUsername == 0) || (oldMerchant.getUsername().equals(newMerchant.getUsername()) && usersWhoHaveThisUsername == 1)) {
+					Matcher merchantUsernameMatcher = Pattern.compile(User.usernamePattern).matcher(newMerchant.getUsername());
+					Matcher merchantDisplayNameMatcher = Pattern.compile(User.displayNamePattern).matcher(newMerchant.getDisplayName());
+
+					if(!merchantUsernameMatcher.matches()) {
+						finalError.append("The username has to be between 1 and 128 characters.<br>");
+					}
+
+					if(!merchantDisplayNameMatcher.matches()) {
+						finalError.append("The display name has to be between 1 and 1024 characters.<br>");
+					}
+
+					if(finalError.length() > 0) {
+						throw new TechstoreDataException(HttpServletResponse.SC_BAD_REQUEST, finalError.toString());
+					}
+
 					User savedMerchant = userRepository.save(newMerchant);
 					savedMerchant.setPassword(null);
 					return ResponseEntity.status(HttpStatus.OK).body(savedMerchant);

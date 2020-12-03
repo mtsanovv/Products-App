@@ -16,6 +16,7 @@ public class Product implements Serializable {
 
 	@Column(name = "name")
 	private String name;
+	public static final String namePattern = "^.{1,1024}$";
 
 	@Column(name = "quantity")
 	private Long quantity;

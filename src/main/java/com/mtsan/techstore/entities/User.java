@@ -18,12 +18,15 @@ public class User implements Serializable {
 
 	@Column(name = "username")
 	private String username;
+	public static final String usernamePattern = "^.{1,128}$";
 
 	@Column(name = "displayName")
 	private String displayName;
+	public static final String displayNamePattern = "^.{1,1024}$";
 
 	@Column(name = "password")
 	private String password;
+	public static final String passwordPattern = "^.{8,50}$";
 
 	@Column(name = "rank", columnDefinition = "ENUM('Merchant', 'Administrator')")
 	@Enumerated(EnumType.STRING)
