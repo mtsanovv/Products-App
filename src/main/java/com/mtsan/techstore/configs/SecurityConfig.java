@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -50,9 +51,37 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.and()
 				.csrf().disable()
 					.authorizeRequests()
-						.antMatchers("/merchants*").hasAuthority(Rank.Administrator.toString())
-						.antMatchers("/products*").hasAuthority(Rank.Administrator.toString())
-						.antMatchers("/clients*").hasAuthority(Rank.Merchant.toString())
+						//Permissions for /products
+						.antMatchers(HttpMethod.POST, "/products").hasAuthority(Rank.Administrator.toString())
+						.antMatchers(HttpMethod.GET, "/products").hasAnyAuthority(Rank.Administrator.toString(), Rank.Merchant.toString())
+
+						//Permissions for /products/**
+						.antMatchers(HttpMethod.GET, "/products/**").hasAuthority(Rank.Administrator.toString())
+						.antMatchers(HttpMethod.PUT, "/products/**").hasAuthority(Rank.Administrator.toString())
+						.antMatchers(HttpMethod.DELETE, "/products/**").hasAuthority(Rank.Administrator.toString())
+
+						//Permissions for /merchants
+						.antMatchers(HttpMethod.POST, "/merchants").hasAuthority(Rank.Administrator.toString())
+						.antMatchers(HttpMethod.GET, "/merchants").hasAuthority(Rank.Administrator.toString())
+
+						//Permissions for /merchants/**
+						.antMatchers(HttpMethod.GET,"/merchants/**").hasAuthority(Rank.Administrator.toString())
+						.antMatchers(HttpMethod.PUT,"/merchants/**").hasAuthority(Rank.Administrator.toString())
+						.antMatchers(HttpMethod.DELETE,"/merchants/**").hasAuthority(Rank.Administrator.toString())
+
+						//Permissions for /clients
+						.antMatchers(HttpMethod.GET, "/clients").hasAuthority(Rank.Merchant.toString())
+						.antMatchers(HttpMethod.POST, "/clients").hasAuthority(Rank.Merchant.toString())
+
+						//Permissions for /clients/**
+						.antMatchers(HttpMethod.GET, "/clients/**").hasAuthority(Rank.Merchant.toString())
+						.antMatchers(HttpMethod.PUT, "/clients/**").hasAuthority(Rank.Merchant.toString())
+						.antMatchers(HttpMethod.DELETE, "/clients/**").hasAuthority(Rank.Merchant.toString())
+
+						//Permissions for /sales
+						.antMatchers(HttpMethod.GET, "/sales").hasAnyAuthority(Rank.Administrator.toString(), Rank.Merchant.toString())
+						.antMatchers(HttpMethod.POST, "/sales").hasAuthority(Rank.Merchant.toString())
+
 						.anyRequest().authenticated()
 				.and()
 					.httpBasic()
