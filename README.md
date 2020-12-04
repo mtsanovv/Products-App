@@ -3,6 +3,10 @@ A Java Spring REST app that has to maintain users and products.
 
 For the frontend UI, please refer to [TechStore-App-Frontend](https://github.com/mtsanovv/TechStore-App-Frontend).
 
+## Requirements
+- Java 11 (this was created using OpenJDK 11.0.4)
+- MySQL/MariaDB server (this was created using MariaDB 10.4.14)
+
 ## Running the app
 1. Clone this repo.
 2. Create database using the given structure in the ```techstore.sql``` file in the ```sql``` directory.
