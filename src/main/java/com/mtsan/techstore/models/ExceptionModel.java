@@ -1,4 +1,4 @@
-package com.mtsan.techstore.exceptions;
+package com.mtsan.techstore.models;
 
 public class ExceptionModel {
 

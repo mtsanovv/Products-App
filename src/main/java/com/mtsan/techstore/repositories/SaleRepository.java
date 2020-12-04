@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.sql.Date;
 import java.util.List;
 
-public interface SalesRepository extends JpaRepository<Sale, Long> {
+public interface SaleRepository extends JpaRepository<Sale, Long> {
 	@Query("FROM Sale s WHERE s.dateSold BETWEEN ?1 AND ?2")
 	List<Sale> getSalesByTimeRange(Date startDate, Date endDate);
 }
