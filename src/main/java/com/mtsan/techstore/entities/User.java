@@ -32,8 +32,11 @@ public class User implements Serializable {
 	@Enumerated(EnumType.STRING)
 	private Rank rank;
 
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "merchant")
+	@OneToMany(mappedBy = "merchant")
 	private List<Client> clients;
+
+	@OneToMany(mappedBy = "sellingMerchant")
+	private List<Sale> sales;
 
 	public User() {
 	} //default constructor
@@ -91,5 +94,13 @@ public class User implements Serializable {
 
 	public void setClients(List<Client> clients) {
 		this.clients = clients;
+	}
+
+	public List<Sale> getSales() {
+		return sales;
+	}
+
+	public void setSales(List<Sale> sales) {
+		this.sales = sales;
 	}
 }

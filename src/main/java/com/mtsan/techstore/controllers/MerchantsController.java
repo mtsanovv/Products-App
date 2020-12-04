@@ -1,7 +1,6 @@
 package com.mtsan.techstore.controllers;
 
 import com.mtsan.techstore.Rank;
-import com.mtsan.techstore.entities.Client;
 import com.mtsan.techstore.entities.User;
 import com.mtsan.techstore.exceptions.TechstoreDataException;
 import com.mtsan.techstore.repositories.UserRepository;
