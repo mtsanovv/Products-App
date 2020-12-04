@@ -96,7 +96,7 @@ public class SalesController {
 
 	//selling a product
 	@RequestMapping(value = "/sales", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
-	public ResponseEntity addProduct(@RequestBody SaleModel postedSale, Authentication authentication) throws TechstoreDataException {
+	public ResponseEntity sellProduct(@RequestBody SaleModel postedSale, Authentication authentication) throws TechstoreDataException {
 		if (productRepository.count() > 0) {
 			User merchant = userRepository.getUserByUsername(authentication.getName()).get(0);
 
