@@ -9,6 +9,7 @@ import com.mtsan.techstore.models.SaleModel;
 import com.mtsan.techstore.repositories.ProductRepository;
 import com.mtsan.techstore.repositories.SaleRepository;
 import com.mtsan.techstore.repositories.UserRepository;
+import com.mtsan.techstore.services.MailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -28,6 +29,8 @@ public class SalesController {
 	private UserRepository userRepository;
 	@Autowired
 	private ProductRepository productRepository;
+	@Autowired
+	private MailService mailService;
 
 	//fetching a list of all sales
 	@RequestMapping(value = "/sales", method = RequestMethod.GET)
@@ -107,9 +110,32 @@ public class SalesController {
 					throw new TechstoreDataException(HttpServletResponse.SC_NOT_FOUND, "You can't sell more than " + product.getQuantity() + " of this product");
 				}
 
+				if(postedSale.getQuantitySold() == 0) {
+					throw new TechstoreDataException(HttpServletResponse.SC_NOT_FOUND, "You need to sell more than 0 of this product");
+				}
+
 				product.setQuantity(product.getQuantity() - postedSale.getQuantitySold());
 				if(product.getQuantity() <= product.getCriticalQuantity()) {
-					//TODO send an email for product depletion
+					List<User> admins = userRepository.getUsersByRank(Rank.Administrator);
+					if(admins.size() > 0) {
+						for(User admin : admins) {
+							if(admin.getEmail() != null && admin.getEmail().length() > 0) {
+								try {
+									mailService.sendSimpleMessage(admin.getEmail(),
+												"Depletion of " + product.getName(),
+												"Dear " + admin.getDisplayName() + ",\n\n" +
+													"You are receiving the following automatic email because the merchant \"" +
+													merchant.getUsername() + "\" (\"" + merchant.getDisplayName() + "\", ID " + merchant.getId() + ") has just sold " +
+													postedSale.getQuantitySold() + " of the product \"" + product.getName() + "\" (ID " + product.getId() + "). There are " + product.getQuantity() +
+													" items left, whereas the critical quantity for the product is " + product.getCriticalQuantity() +
+													".\nPlease restock ASAP.\n\nDo not reply to this email: it is sent automatically by the TechStore system.");
+								}
+								catch(Exception e) {
+									System.out.println("Non-fatal error: the admin " + admin.getUsername() + " with email " + admin.getEmail() + " cannot receive the automated product depletion mail.");
+								}
+							}
+						}
+					}
 				}
 
 				Sale newSale = new Sale();

@@ -10,7 +10,7 @@ For the frontend UI, please refer to [TechStore-App-Frontend](https://github.com
 ## Running the app
 1. Clone this repo.
 2. Create database using the given structure in the ```techstore.sql``` file in the ```sql``` directory.
-3. Open the file ```application.properties```, located in the ```src/main/resources```directory.  Configure the SQL database name and user access (that user should only have SELECT, INSERT, UPDATE, DELETE permissions on the TechStore database, and nowhere else). Configure the allowed origins (an example of how they should be written is already done - domains with http:// or https:// prefixes, separated by commas). **Note: the allowed origins parameter should never be empty.** Don't forget to configure the SMTP mailing settings as well.
+3. Open the file ```application.properties```, located in the ```src/main/resources```directory.  Configure the SQL database name and user access (that user should only have SELECT, INSERT, UPDATE, DELETE permissions on the TechStore database, and nowhere else). Configure the allowed origins (an example of how they should be written is already done - domains with http:// or https:// prefixes, separated by commas). **Note: the allowed origins parameter should never be empty.** Don't forget to configure the mailing settings as well or you may not be able to receive mail properly.
 4. Have Gradle download the dependencies. After it's done, run ```gradlew bootRun``` to run the Spring Boot app. 
 
 ## Notes

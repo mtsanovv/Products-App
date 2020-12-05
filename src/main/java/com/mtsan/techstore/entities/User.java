@@ -28,6 +28,9 @@ public class User implements Serializable {
 	private String password;
 	public static final String passwordPattern = "^.{8,50}$";
 
+	@Column(name = "email")
+	private String email;
+
 	@Column(name = "rank", columnDefinition = "ENUM('Merchant', 'Administrator')")
 	@Enumerated(EnumType.STRING)
 	private Rank rank;
@@ -41,10 +44,11 @@ public class User implements Serializable {
 	public User() {
 	} //default constructor
 
-	public User(String username, String displayName, String password, Rank rank) {
+	public User(String username, String displayName, String password, String email, Rank rank) {
 		this.username = username;
 		this.displayName = displayName;
 		this.password = password;
+		this.email = email;
 		this.rank = rank;
 	}
 
@@ -102,5 +106,13 @@ public class User implements Serializable {
 
 	public void setSales(List<Sale> sales) {
 		this.sales = sales;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 }
