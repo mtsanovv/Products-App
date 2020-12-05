@@ -1,12 +1,12 @@
 spring.datasource.url=jdbc:mysql://${MYSQL_HOST:localhost}:3306/techstore
-spring.datasource.username=techstoresql
-spring.datasource.password=oWAmj4umOAPTyOIf
+spring.datasource.username=dbUser
+spring.datasource.password=dbPass
 
-http.allowed-origins=http://localhost:4424,http://localhost:8080
+http.allowed-origins=http://example.com,http://localhost:8080
 
 spring.mail.host=smtp.gmail.com
-spring.mail.username=techstoremerchant@gmail.com
-spring.mail.password=samplepass
+spring.mail.username=someMail@gmail.com
+spring.mail.password=inputPassHere
 spring.mail.port=587
 spring.mail.properties.mail.smtp.starttls.enable=true
 

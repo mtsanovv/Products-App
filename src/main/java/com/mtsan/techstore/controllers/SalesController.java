@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 import java.sql.Date;
 import java.util.List;
+import java.util.function.Predicate;
 
 @RestController
 public class SalesController {
@@ -56,11 +57,17 @@ public class SalesController {
 								Date endDate = Date.valueOf(end_date);
 
 								List<Sale> merchantSales = merchant.getSales();
-								for (int i = 0; i < merchantSales.size(); i++) {
-									if (merchantSales.get(i).getDateSold().compareTo(startDate) < 0 || merchantSales.get(i).getDateSold().compareTo(endDate) > 0) {
-										merchantSales.remove(i);
+								merchantSales.removeIf(new Predicate<Sale>(){
+
+									@Override
+									public boolean test(Sale sale) {
+										if (sale.getDateSold().compareTo(startDate) < 0 || sale.getDateSold().compareTo(endDate) > 0) {
+											return true;
+										} else {
+											return false;
+										}
 									}
-								}
+								});
 								return ResponseEntity.status(HttpStatus.OK).body(merchantSales);
 							}
 							return ResponseEntity.status(HttpStatus.OK).body(merchant.getSales());
