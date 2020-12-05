@@ -37,6 +37,7 @@ CREATE TABLE `users` (
   `username` varchar(128) NOT NULL,
   `displayName` varchar(1024) NOT NULL,
   `password` varchar(1024) NOT NULL,
+  `email` varchar(1024) DEFAULT NULL,
   `rank` enum('Merchant','Administrator') NOT NULL DEFAULT 'Merchant' COMMENT '1 - merchant (default),\r\n2 - administrator',
   `enabled` tinyint(1) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
