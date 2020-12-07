@@ -21,6 +21,8 @@ public class UserController {
 	public ResponseEntity user(Authentication authentication) throws TechstoreDataException {
 		User user = userRepository.getUserByUsername(authentication.getName()).get(0);
 		user.setPassword(null);
+		user.setClients(null);
+		user.setSales(null);
 		return ResponseEntity.status(HttpStatus.OK).body(user);
 	}
 }
