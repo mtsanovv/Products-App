@@ -74,11 +74,11 @@ ALTER TABLE `users`
 
 
 ALTER TABLE `clients`
-  ADD CONSTRAINT `clients_ibfk_1` FOREIGN KEY (`merchantId`) REFERENCES `users` (`id`);
+  ADD CONSTRAINT `clients_ibfk_1` FOREIGN KEY (`merchantId`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 ALTER TABLE `sales`
-  ADD CONSTRAINT `sales_ibfk_1` FOREIGN KEY (`productId`) REFERENCES `products` (`id`),
-  ADD CONSTRAINT `sales_ibfk_2` FOREIGN KEY (`soldBy`) REFERENCES `users` (`id`);
+  ADD CONSTRAINT `sales_ibfk_1` FOREIGN KEY (`productId`) REFERENCES `products` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `sales_ibfk_2` FOREIGN KEY (`soldBy`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
