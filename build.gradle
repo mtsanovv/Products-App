@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.mtsan'
-version = '0.9.1'
+version = '0.9.2'
 sourceCompatibility = '11'
 
 repositories {
@@ -17,6 +17,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
+	implementation 'org.twitter4j:twitter4j-core:4.0.7'
 	runtimeOnly 'mysql:mysql-connector-java'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
