@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@RequestMapping("/clients")
 @RestController
 public class ClientsController {
 
@@ -26,7 +27,7 @@ public class ClientsController {
 	private UserRepository userRepository;
 
 	//fetching a list of all clients per merchant
-	@RequestMapping(value = "/clients", method = RequestMethod.GET)
+	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity clients(Authentication authentication) throws TechstoreDataException {
 		User merchant = userRepository.getUserByUsername(authentication.getName()).get(0);
 		if (merchant.getClients().size() > 0) {
@@ -37,7 +38,7 @@ public class ClientsController {
 	}
 
 	//adding a client
-	@RequestMapping(value = "/clients", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
+	@RequestMapping(consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
 	public ResponseEntity addClient(@RequestBody Client postedClient, Authentication authentication) throws TechstoreDataException {
 		User merchant = userRepository.getUserByUsername(authentication.getName()).get(0);
 		Matcher clientNameMatcher = Pattern.compile(Client.namePattern).matcher(postedClient.getName());
@@ -53,7 +54,7 @@ public class ClientsController {
 	}
 
 	//fetching a client
-	@RequestMapping(value = "/clients/{clientId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/{clientId}", method = RequestMethod.GET)
 	public ResponseEntity getClient(@PathVariable Long clientId, Authentication authentication) throws TechstoreDataException {
 		User merchant = userRepository.getUserByUsername(authentication.getName()).get(0);
 		List<Client> clients = merchant.getClients();
@@ -73,7 +74,7 @@ public class ClientsController {
 	}
 
 	//editing a client
-	@RequestMapping(value = "/clients/{clientId}", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.PUT)
+	@RequestMapping(value = "/{clientId}", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.PUT)
 	public ResponseEntity editClient(@RequestBody Client newClient, @PathVariable Long clientId, Authentication authentication) throws TechstoreDataException {
 		User merchant = userRepository.getUserByUsername(authentication.getName()).get(0);
 		List<Client> clients = merchant.getClients();
@@ -101,7 +102,7 @@ public class ClientsController {
 	}
 
 	//deleting a client
-	@RequestMapping(value = "/clients/{clientId}", method = RequestMethod.DELETE)
+	@RequestMapping(value = "/{clientId}", method = RequestMethod.DELETE)
 	public ResponseEntity deleteClient(@PathVariable Long clientId, Authentication authentication) throws TechstoreDataException {
 		User merchant = userRepository.getUserByUsername(authentication.getName()).get(0);
 		List<Client> clients = merchant.getClients();

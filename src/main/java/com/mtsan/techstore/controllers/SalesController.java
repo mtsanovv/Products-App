@@ -22,6 +22,7 @@ import java.sql.Date;
 import java.util.List;
 import java.util.function.Predicate;
 
+@RequestMapping("/sales")
 @RestController
 public class SalesController {
 	@Autowired
@@ -34,7 +35,7 @@ public class SalesController {
 	private MailService mailService;
 
 	//fetching a list of all sales
-	@RequestMapping(value = "/sales", method = RequestMethod.GET)
+	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity sales(@RequestParam(required = false) String start_date, @RequestParam(required = false) String end_date, @RequestParam(required = false) Long merchant_id, Authentication authentication) throws TechstoreDataException {
 		if (saleRepository.count() > 0) {
 			String rank = authentication.getAuthorities().toArray()[0].toString();
@@ -105,7 +106,7 @@ public class SalesController {
 	}
 
 	//selling a product
-	@RequestMapping(value = "/sales", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
+	@RequestMapping(consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
 	public ResponseEntity sellProduct(@RequestBody SaleModel postedSale, Authentication authentication) throws TechstoreDataException {
 		if (productRepository.count() > 0) {
 			User merchant = userRepository.getUserByUsername(authentication.getName()).get(0);

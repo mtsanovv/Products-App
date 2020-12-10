@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@RequestMapping("/merchants")
 @RestController
 public class MerchantsController {
 
@@ -26,7 +27,7 @@ public class MerchantsController {
 	PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
 	//fetching a list of all merchants
-	@RequestMapping(value = "/merchants", method = RequestMethod.GET)
+	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity merchants() throws TechstoreDataException {
 		List<User> merchants = userRepository.getUsersByRank(Rank.Merchant);
 		if (merchants.size() > 0) {
@@ -41,7 +42,7 @@ public class MerchantsController {
 	}
 
 	//adding a merchant
-	@RequestMapping(value = "/merchants", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
+	@RequestMapping(consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
 	public ResponseEntity addMerchant(@RequestBody User postedMerchant) throws TechstoreDataException {
 		StringBuilder finalError = new StringBuilder();
 		Matcher merchantPasswordMatcher = Pattern.compile(User.passwordPattern).matcher(postedMerchant.getPassword());
@@ -75,7 +76,7 @@ public class MerchantsController {
 	}
 
 	//fetching a merchant
-	@RequestMapping(value = "/merchants/{merchantId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/{merchantId}", method = RequestMethod.GET)
 	public ResponseEntity getMerchant(@PathVariable Long merchantId) throws TechstoreDataException {
 		if (userRepository.getUsersByRank(Rank.Merchant).size() > 0) {
 			boolean isIdReal = userRepository.existsById(merchantId);
@@ -92,7 +93,7 @@ public class MerchantsController {
 	}
 
 	//editing a merchant
-	@RequestMapping(value = "/merchants/{merchantId}", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.PUT)
+	@RequestMapping(value = "/{merchantId}", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.PUT)
 	public ResponseEntity editMerchant(@RequestBody User newMerchant, @PathVariable Long merchantId) throws TechstoreDataException {
 		List<User> merchants = userRepository.getUsersByRank(Rank.Merchant);
 		if (merchants.size() > 0) {
@@ -148,7 +149,7 @@ public class MerchantsController {
 	}
 
 	//deleting a merchant
-	@RequestMapping(value = "/merchants/{merchantId}", method = RequestMethod.DELETE)
+	@RequestMapping(value = "/{merchantId}", method = RequestMethod.DELETE)
 	public ResponseEntity deleteMerchant(@PathVariable Long merchantId) throws TechstoreDataException {
 		if (userRepository.count() > 0) {
 			boolean isIdReal = userRepository.existsById(merchantId);

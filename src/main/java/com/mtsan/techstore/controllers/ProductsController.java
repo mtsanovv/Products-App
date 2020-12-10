@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@RequestMapping("/products")
 @RestController
 public class ProductsController {
 
@@ -20,7 +21,7 @@ public class ProductsController {
 	private ProductRepository productRepository;
 
 	//fetching a list of all products
-	@RequestMapping(value = "/products", method = RequestMethod.GET)
+	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity products() throws TechstoreDataException {
 		if (productRepository.count() > 0) {
 			return ResponseEntity.status(HttpStatus.OK).body(productRepository.findAll());
@@ -30,7 +31,7 @@ public class ProductsController {
 	}
 
 	//adding a product
-	@RequestMapping(value = "/products", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
+	@RequestMapping(consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
 	public ResponseEntity addProduct(@RequestBody Product postedProduct) throws TechstoreDataException {
 		Matcher productNameMatcher = Pattern.compile(Product.namePattern).matcher(postedProduct.getName());
 		if(!productNameMatcher.matches()) {
@@ -43,7 +44,7 @@ public class ProductsController {
 	}
 
 	//fetching a product
-	@RequestMapping(value = "/products/{productId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/{productId}", method = RequestMethod.GET)
 	public ResponseEntity getProduct(@PathVariable Long productId) throws TechstoreDataException {
 		if (productRepository.count() > 0) {
 			boolean isIdReal = productRepository.existsById(productId);
@@ -58,7 +59,7 @@ public class ProductsController {
 	}
 
 	//editing a product
-	@RequestMapping(value = "/products/{productId}", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.PUT)
+	@RequestMapping(value = "/{productId}", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.PUT)
 	public ResponseEntity editProduct(@RequestBody Product newProduct, @PathVariable Long productId) throws TechstoreDataException {
 		if (productRepository.count() > 0) {
 			boolean isIdReal = productRepository.existsById(productId);
@@ -80,7 +81,7 @@ public class ProductsController {
 	}
 
 	//deleting a product
-	@RequestMapping(value = "/products/{productId}", method = RequestMethod.DELETE)
+	@RequestMapping(value = "/{productId}", method = RequestMethod.DELETE)
 	public ResponseEntity deleteProduct(@PathVariable Long productId) throws TechstoreDataException {
 		if (productRepository.count() > 0) {
 			boolean isIdReal = productRepository.existsById(productId);
