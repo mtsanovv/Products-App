@@ -149,6 +149,7 @@ public class SalesController {
 				newSale.setProduct(product);
 				newSale.setQuantitySold(postedSale.getQuantitySold());
 				newSale.setSellingMerchant(merchant);
+				newSale.setPriceSold(product.getPricePerItem());
 				newSale.setDateSold(new Date(System.currentTimeMillis()));
 
 				Sale savedSale = saleRepository.save(newSale);

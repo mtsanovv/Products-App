@@ -29,7 +29,8 @@ CREATE TABLE `sales` (
   `productId` bigint(20) UNSIGNED NOT NULL,
   `quantitySold` bigint(20) UNSIGNED NOT NULL,
   `soldBy` bigint(20) UNSIGNED NOT NULL,
-  `dateSold` date NOT NULL DEFAULT current_timestamp()
+  `dateSold` date NOT NULL DEFAULT curdate(),
+  `priceSold` decimal(10,4) NOT NULL DEFAULT 0.0000
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `users` (

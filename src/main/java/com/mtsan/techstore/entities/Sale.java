@@ -2,6 +2,7 @@ package com.mtsan.techstore.entities;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.sql.Date;
 
 @Entity
@@ -28,15 +29,19 @@ public class Sale implements Serializable {
 	@Column(name = "dateSold")
 	private Date dateSold;
 
+	@Column(name = "priceSold")
+	private BigDecimal priceSold;
+
 	public Sale() {
 	} //default constructor
 
-	public Sale(Long id, Product product, Long quantitySold, User sellingMerchant, Date dateSold) {
+	public Sale(Long id, Product product, Long quantitySold, User sellingMerchant, Date dateSold, BigDecimal priceSold) {
 		this.id = id;
 		this.product = product;
 		this.quantitySold = quantitySold;
 		this.sellingMerchant = sellingMerchant;
 		this.dateSold = dateSold;
+		this.priceSold = priceSold;
 	}
 
 	public Long getId() {
@@ -73,5 +78,13 @@ public class Sale implements Serializable {
 
 	public void setDateSold(Date dateSold) {
 		this.dateSold = dateSold;
+	}
+
+	public BigDecimal getPriceSold() {
+		return priceSold;
+	}
+
+	public void setPriceSold(BigDecimal priceSold) {
+		this.priceSold = priceSold;
 	}
 }
