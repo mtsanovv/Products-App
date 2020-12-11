@@ -15,15 +15,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class UserController {
 
-	private UserRepository userRepository;
+	private final UserRepository userRepository;
 
 	@Autowired
 	public UserController(UserRepository userRepository) {
 		this.userRepository = userRepository;
 	}
 
-	//fetching data about the currently authenticated user
-	@RequestMapping(method = RequestMethod.GET)
+	//fetching data about the currently authenticated user or login
+	@RequestMapping(method = { RequestMethod.GET, RequestMethod.POST })
 	public ResponseEntity user(Authentication authentication) throws TechstoreDataException {
 		User user = userRepository.getUserByUsername(authentication.getName()).get(0);
 		user.setPassword(null);
