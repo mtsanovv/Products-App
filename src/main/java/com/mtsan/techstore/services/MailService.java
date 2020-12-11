@@ -1,29 +1,24 @@
 package com.mtsan.techstore.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Service;
 
-@Service
 public class MailService {
 
-	private JavaMailSender javaMailSender;
+	private final JavaMailSender javaMailSender;
 
-	@Autowired
-	private Environment env;
+	private final String springMailUsername;
 
-	@Autowired
-	public MailService(JavaMailSender javaMailSender) {
+	public MailService(JavaMailSender javaMailSender, String springMailUsername) {
 		this.javaMailSender = javaMailSender;
+		this.springMailUsername = springMailUsername;
 	}
 
 	@Async
 	public void sendSimpleMessage(String to, String subject, String text) {
 		SimpleMailMessage message = new SimpleMailMessage();
-		message.setFrom("TechStore Mail <" + env.getProperty("spring.mail.username") + ">");
+		message.setFrom("TechStore Mail <" + springMailUsername + ">");
 		message.setTo(to);
 		message.setSubject(subject);
 		message.setText(text);

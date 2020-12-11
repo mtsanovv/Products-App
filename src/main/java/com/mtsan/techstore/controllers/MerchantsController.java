@@ -21,10 +21,15 @@ import java.util.regex.Pattern;
 @RestController
 public class MerchantsController {
 
-	@Autowired
-	private UserRepository userRepository;
+	private final UserRepository userRepository;
 
-	PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+	private final PasswordEncoder passwordEncoder;
+
+	@Autowired
+	public MerchantsController(UserRepository userRepository) {
+		this.userRepository = userRepository;
+		this.passwordEncoder = new BCryptPasswordEncoder();
+	}
 
 	//fetching a list of all merchants
 	@RequestMapping(method = RequestMethod.GET)

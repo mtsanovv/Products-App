@@ -21,10 +21,15 @@ import java.util.regex.Pattern;
 @RestController
 public class ClientsController {
 
+	private final ClientRepository clientRepository;
+
+	private final UserRepository userRepository;
+
 	@Autowired
-	private ClientRepository clientRepository;
-	@Autowired
-	private UserRepository userRepository;
+	public ClientsController(ClientRepository clientRepository, UserRepository userRepository) {
+		this.clientRepository = clientRepository;
+		this.userRepository = userRepository;
+	}
 
 	//fetching a list of all clients per merchant
 	@RequestMapping(method = RequestMethod.GET)

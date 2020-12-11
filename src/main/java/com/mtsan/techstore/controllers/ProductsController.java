@@ -17,8 +17,12 @@ import java.util.regex.Pattern;
 @RestController
 public class ProductsController {
 
+	private final ProductRepository productRepository;
+
 	@Autowired
-	private ProductRepository productRepository;
+	public ProductsController(ProductRepository productRepository) {
+		this.productRepository = productRepository;
+	}
 
 	//fetching a list of all products
 	@RequestMapping(method = RequestMethod.GET)

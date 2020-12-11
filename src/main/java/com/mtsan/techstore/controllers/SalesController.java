@@ -25,14 +25,22 @@ import java.util.function.Predicate;
 @RequestMapping("/sales")
 @RestController
 public class SalesController {
+
+	private final SaleRepository saleRepository;
+
+	private final UserRepository userRepository;
+
+	private final ProductRepository productRepository;
+
+	private final MailService mailService;
+
 	@Autowired
-	private SaleRepository saleRepository;
-	@Autowired
-	private UserRepository userRepository;
-	@Autowired
-	private ProductRepository productRepository;
-	@Autowired
-	private MailService mailService;
+	public SalesController(SaleRepository saleRepository, UserRepository userRepository, ProductRepository productRepository, MailService mailService) {
+		this.saleRepository = saleRepository;
+		this.userRepository = userRepository;
+		this.productRepository = productRepository;
+		this.mailService = mailService;
+	}
 
 	//fetching a list of all sales
 	@RequestMapping(method = RequestMethod.GET)
