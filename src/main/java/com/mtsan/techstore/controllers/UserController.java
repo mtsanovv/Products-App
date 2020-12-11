@@ -43,7 +43,7 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.OK).body(user);
 	}
 
-	//fetching data about the currently authenticated user or login
+	//tweeting a marketing message by a merchant
 	@RequestMapping(value = "/tweet", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
 	public ResponseEntity tweet(@RequestBody TweetModel postedTweet) throws TechstoreDataException {
 		try {
