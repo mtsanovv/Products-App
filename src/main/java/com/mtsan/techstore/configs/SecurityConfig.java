@@ -55,8 +55,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 						//Permissions for /products/*/tweet
 						.antMatchers(HttpMethod.POST, "/products/*/tweet").hasAuthority(Rank.Merchant.toString())
 
-						//Permissions for /products/**
-						.antMatchers(HttpMethod.GET, "/products/*").hasAuthority(Rank.Administrator.toString())
+						//Permissions for /products/*
+						.antMatchers(HttpMethod.GET, "/products/*").hasAnyAuthority(Rank.Administrator.toString(), Rank.Merchant.toString())
 						.antMatchers(HttpMethod.PUT, "/products/*").hasAuthority(Rank.Administrator.toString())
 						.antMatchers(HttpMethod.DELETE, "/products/*").hasAuthority(Rank.Administrator.toString())
 
@@ -64,7 +64,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 						.antMatchers(HttpMethod.POST, "/merchants").hasAuthority(Rank.Administrator.toString())
 						.antMatchers(HttpMethod.GET, "/merchants").hasAuthority(Rank.Administrator.toString())
 
-						//Permissions for /merchants/**
+						//Permissions for /merchants/*
 						.antMatchers(HttpMethod.GET,"/merchants/*").hasAuthority(Rank.Administrator.toString())
 						.antMatchers(HttpMethod.PUT,"/merchants/*").hasAuthority(Rank.Administrator.toString())
 						.antMatchers(HttpMethod.DELETE,"/merchants/*").hasAuthority(Rank.Administrator.toString())
@@ -73,7 +73,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 						.antMatchers(HttpMethod.GET, "/clients").hasAuthority(Rank.Merchant.toString())
 						.antMatchers(HttpMethod.POST, "/clients").hasAuthority(Rank.Merchant.toString())
 
-						//Permissions for /clients/**
+						//Permissions for /clients/*
 						.antMatchers(HttpMethod.GET, "/clients/*").hasAuthority(Rank.Merchant.toString())
 						.antMatchers(HttpMethod.PUT, "/clients/*").hasAuthority(Rank.Merchant.toString())
 						.antMatchers(HttpMethod.DELETE, "/clients/*").hasAuthority(Rank.Merchant.toString())
