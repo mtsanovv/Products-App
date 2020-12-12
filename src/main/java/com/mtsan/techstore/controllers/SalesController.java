@@ -63,23 +63,52 @@ public class SalesController {
 					if (isIdReal) {
 						User merchant = userRepository.findById(merchant_id).get();
 						if (merchant.getRank() == Rank.Merchant) {
-							if (start_date != null && end_date != null) {
+							if (start_date != null || end_date != null) {
 								//the id we need is indeed for a merchant
-								//and we also have a start and end date given
-								Date startDate = Date.valueOf(start_date);
-								Date endDate = Date.valueOf(end_date);
+								//and we also have a start and/or end date given
+								Date startDate = null;
+								Date endDate = null;
+								try {
+									if (start_date != null) {
+										startDate = Date.valueOf(start_date);
+									}
+									if (end_date != null) {
+										endDate = Date.valueOf(end_date);
+									}
+								}
+								catch (IllegalArgumentException e) {
+									throw new TechstoreDataException(HttpServletResponse.SC_BAD_REQUEST, "Bad Request");
+								}
 
 								List<Sale> merchantSales = merchant.getSales();
+								final Date finalStartDate = startDate;
+								final Date finalEndDate = endDate;
+
 								merchantSales.removeIf(new Predicate<Sale>(){
 
 									@Override
 									public boolean test(Sale sale) {
-										return sale.getDateSold().compareTo(startDate) < 0 || sale.getDateSold().compareTo(endDate) > 0;
+										if(finalStartDate != null && finalEndDate != null) {
+											return sale.getDateSold().compareTo(finalStartDate) < 0 || sale.getDateSold().compareTo(finalEndDate) > 0;
+										} else if(finalStartDate != null) {
+											return sale.getDateSold().compareTo(finalStartDate) < 0;
+										} else if(finalEndDate != null) {
+											return sale.getDateSold().compareTo(finalEndDate) > 0;
+										}
+										return false;
 									}
 								});
-								return ResponseEntity.status(HttpStatus.OK).body(merchantSales);
+								if(merchantSales.size() > 0) {
+									return ResponseEntity.status(HttpStatus.OK).body(merchantSales);
+								}
+								throw new TechstoreDataException(HttpServletResponse.SC_NOT_FOUND, "No sales found for the given time period and merchant");
 							}
-							return ResponseEntity.status(HttpStatus.OK).body(merchant.getSales());
+
+							List<Sale> listOfMerchantSales = merchant.getSales();
+							if(listOfMerchantSales.size() > 0) {
+								return ResponseEntity.status(HttpStatus.OK).body(merchant.getSales());
+							}
+							throw new TechstoreDataException(HttpServletResponse.SC_NOT_FOUND, "No sales found for the given merchant");
 						} else {
 							throw new TechstoreDataException(HttpServletResponse.SC_NOT_FOUND, "Invalid merchant ID");
 						}
@@ -87,18 +116,33 @@ public class SalesController {
 						throw new TechstoreDataException(HttpServletResponse.SC_NOT_FOUND, "Merchant not found");
 					}
 				}
-				if (start_date != null && end_date != null) {
+				if (start_date != null || end_date != null) {
 					Date startDate = null;
 					Date endDate = null;
 					try {
-						startDate = Date.valueOf(start_date);
-						endDate = Date.valueOf(end_date);
+						if (start_date != null) {
+							startDate = Date.valueOf(start_date);
+						}
+						if (end_date != null) {
+							endDate = Date.valueOf(end_date);
+						}
 					}
 					catch (IllegalArgumentException e) {
 						throw new TechstoreDataException(HttpServletResponse.SC_BAD_REQUEST, "Bad Request");
 					}
-					List<Sale> sales = saleRepository.getSalesByTimeRange(startDate, endDate);
-					if (sales.size() > 0) {
+
+					List<Sale> sales = null;
+
+					if(startDate != null && endDate != null) {
+						sales = saleRepository.getSalesByTimeRange(startDate, endDate);
+					} else if(startDate != null) {
+						sales = saleRepository.getSalesAfterDate(startDate);
+					}
+					else if(endDate != null) {
+						sales = saleRepository.getSalesBeforeDate(endDate);
+					}
+
+					if (sales != null && sales.size() > 0) {
 						return ResponseEntity.status(HttpStatus.OK).body(sales);
 					} else {
 						throw new TechstoreDataException(HttpServletResponse.SC_NOT_FOUND, "No sales found for the given time period");
