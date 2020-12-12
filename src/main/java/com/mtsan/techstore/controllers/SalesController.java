@@ -50,7 +50,11 @@ public class SalesController {
 			if (rank.equals(Rank.Merchant.toString())) {
 				//the authenticated user is Merchant, they can only see all their sales
 				User merchant = userRepository.getUserByUsername(authentication.getName()).get(0);
-				return ResponseEntity.status(HttpStatus.OK).body(merchant.getSales());
+				List<Sale> merchantSales = merchant.getSales();
+				if(merchantSales.size() > 0) {
+					return ResponseEntity.status(HttpStatus.OK).body(merchantSales);
+				}
+				throw new TechstoreDataException(HttpServletResponse.SC_NOT_FOUND, "You haven't sold anything yet");
 			} else if (rank.equals(Rank.Administrator.toString())) {
 				//the authenticated user is Administrator, they can analyze sales given dates and merchants
 				if (merchant_id != null) {
@@ -70,11 +74,7 @@ public class SalesController {
 
 									@Override
 									public boolean test(Sale sale) {
-										if (sale.getDateSold().compareTo(startDate) < 0 || sale.getDateSold().compareTo(endDate) > 0) {
-											return true;
-										} else {
-											return false;
-										}
+										return sale.getDateSold().compareTo(startDate) < 0 || sale.getDateSold().compareTo(endDate) > 0;
 									}
 								});
 								return ResponseEntity.status(HttpStatus.OK).body(merchantSales);
