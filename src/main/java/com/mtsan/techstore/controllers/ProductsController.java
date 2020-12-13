@@ -110,7 +110,7 @@ public class ProductsController {
 	}
 
 	//posting a promotional offer about a product
-	@RequestMapping(value = "/{productId}/tweet", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
+	@RequestMapping(value = "/{productId}/tweet", method = RequestMethod.POST)
 	public ResponseEntity tweet(@PathVariable Long productId) throws TechstoreDataException {
 		if (productRepository.count() > 0) {
 			boolean isIdReal = productRepository.existsById(productId);
