@@ -26,3 +26,5 @@ For the frontend UI, please refer to [TechStore-App-Frontend](https://github.com
 
 ## Notes
 - Always make sure the origins are https (unless it's localhost) - the basic HTTP authentication method used here should always be done over secure (https) connections.
+
+*M. Tsanov, 2020*
